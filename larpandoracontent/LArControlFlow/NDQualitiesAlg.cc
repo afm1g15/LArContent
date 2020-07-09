@@ -81,19 +81,6 @@ namespace lar_content
 	std::cout << "NDQualitiesAlg ::  PDG code: " << pPfo->GetParticleId()  << " Daughters:  " << pPfo->GetNDaughterPfos() << " Parents:  " << pPfo->GetNParentPfos() << std::endl;
 	std::cout << "NDQualitiesAlg ::  mass: " << pPfo->GetMass()*1000 << " MeV" << std::endl; //given in GeV
 
-	double energybylengthtotal_end = 0;
-	double energybylengthtotalb_end = 0;
-	double fdeltaEfromminchi = 0;
-	double bdeltaEfromminchi = 0;
-	for (const ParticleFlowObject *const pPfo : *pPfoList)
-	  {
-
-	std::cout << "NDQualitiesAlg: pPfo " << pPfo << std::endl;
-	std::cout << "NDQualitiesAlg: PDG code: " << pPfo->GetParticleId()  << " Daughters:  " << pPfo->GetNDaughterPfos() << " Parents:  " << pPfo->GetNParentPfos() << std::endl;
-	std::cout << "NDQualitiesAlg: mass: " << pPfo->GetMass()*1000 << " MeV" << std::endl; //given in GeV
-
-
-
 	double energypfo = 0;
 	double energycount = 0;
 	double predenergy = 0.0;
@@ -180,10 +167,10 @@ namespace lar_content
 
 	//-------Send it through the TDT -------------------------------------------------------------------------------
 	//	if ((isContainedTrack == true  || isUnContainedTrack == true) && clusterList.size() == 4) {
-	if (clusterList.size() == 4) {
+	//	if (clusterList.size() == 4) {
 	  if ((isContainedTrack == true  || isUnContainedTrack == true) && clusterList.size() == 4) {
 
-	    if(clusterList.size() !=0) {
+	     if(clusterList.size() !=0) {
 	      pCluster->GetOrderedCaloHitList().FillCaloHitList(caloHitList);
 
 	      HitChargeVector hitChargeVector;
