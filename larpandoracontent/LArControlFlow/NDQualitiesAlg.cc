@@ -6,7 +6,6 @@
 #include "larpandoracontent/LArHelpers/LArMonitoringHelper.h"
 #include "larpandoracontent/LArHelpers/LArPfoHelper.h"
 #include "larpandoracontent/LArHelpers/LArMCParticleHelper.h"
-//#include <time.h> 
 
 using namespace pandora;
 
@@ -65,6 +64,7 @@ namespace lar_content
     double andyenergytotal_b_L = 0;
     double energybylengthtotal = 0;
     double energybylengthtotalb = 0;
+
     // double energybylengthtotal_end = 0;
     // double energybylengthtotalb_end = 0;
     double fdeltaEfromminchi = 0;
@@ -80,6 +80,18 @@ namespace lar_content
 	std::cout << "NDQualitiesAlg :: pPfo " << pPfo << std::endl;
 	std::cout << "NDQualitiesAlg ::  PDG code: " << pPfo->GetParticleId()  << " Daughters:  " << pPfo->GetNDaughterPfos() << " Parents:  " << pPfo->GetNParentPfos() << std::endl;
 	std::cout << "NDQualitiesAlg ::  mass: " << pPfo->GetMass()*1000 << " MeV" << std::endl; //given in GeV
+
+	double energybylengthtotal_end = 0;
+	double energybylengthtotalb_end = 0;
+	double fdeltaEfromminchi = 0;
+	double bdeltaEfromminchi = 0;
+	for (const ParticleFlowObject *const pPfo : *pPfoList)
+	  {
+
+	std::cout << "NDQualitiesAlg: pPfo " << pPfo << std::endl;
+	std::cout << "NDQualitiesAlg: PDG code: " << pPfo->GetParticleId()  << " Daughters:  " << pPfo->GetNDaughterPfos() << " Parents:  " << pPfo->GetNParentPfos() << std::endl;
+	std::cout << "NDQualitiesAlg: mass: " << pPfo->GetMass()*1000 << " MeV" << std::endl; //given in GeV
+
 
 
 	double energypfo = 0;
@@ -133,9 +145,6 @@ namespace lar_content
 		      (xAtLowerY < parentMaxX - 1) && (xAtLowerY > parentMinX + 1 ));
 
 
-
-	  // std::cout << "isContained? : " << isContained << std::endl;
-
 	  if (isContained == true && pPfo->GetParticleId() == 13) {
 	    isContainedTrack = true;
 	  }
@@ -172,29 +181,30 @@ namespace lar_content
 	//-------Send it through the TDT -------------------------------------------------------------------------------
 	//	if ((isContainedTrack == true  || isUnContainedTrack == true) && clusterList.size() == 4) {
 	if (clusterList.size() == 4) {
+	  if ((isContainedTrack == true  || isUnContainedTrack == true) && clusterList.size() == 4) {
 
-	  if(clusterList.size() !=0) {
-	    pCluster->GetOrderedCaloHitList().FillCaloHitList(caloHitList);
+	    if(clusterList.size() !=0) {
+	      pCluster->GetOrderedCaloHitList().FillCaloHitList(caloHitList);
 
-	    HitChargeVector hitChargeVector;
-	    CartesianVector endPoint1(0.0, 0.0, 0.0);
-	    CartesianVector endPoint2(0.0, 0.0, 0.0);
-	    float trackLength = 0.f;
-	    this->AddToSlidingFitCache(pCluster);
-	    this->FillHitChargeVector(pCluster, hitChargeVector, endPoint1, endPoint2);
-	    this->GetTrackLength(hitChargeVector, trackLength);
-	    std::cout << "trackLength: (TDT) " << trackLength << " cm" << std::endl;
+	      HitChargeVector hitChargeVector;
+	      CartesianVector endPoint1(0.0, 0.0, 0.0);
+	      CartesianVector endPoint2(0.0, 0.0, 0.0);
+	      float trackLength = 0.f;
+	      this->AddToSlidingFitCache(pCluster);
+	      this->FillHitChargeVector(pCluster, hitChargeVector, endPoint1, endPoint2);
+	      this->GetTrackLength(hitChargeVector, trackLength);
+	      std::cout << "trackLength: (TDT) " << trackLength << " cm" << std::endl;
 
 
-	    //------set lookup tables and fit parameters----------------------------------------------------------------------------
-	    lar_content::NDQualitiesAlg::LookupTable lookupTableMuon;
-	    lar_content::NDQualitiesAlg::LookupTable lookupTableProton;
-	    lar_content::NDQualitiesAlg::LookupTable lookupTableElectron;
-	    double InitialEnergy = 5000;
-	    double BinWidth = 1;
-	    double Mm = 105.66;               //now this is MeV 
-	    double Mp = 938.28;
-	    double Me = 0.511;
+	      //------set lookup tables and fit parameters----------------------------------------------------------------------------
+	      lar_content::NDQualitiesAlg::LookupTable lookupTableMuon;
+	      lar_content::NDQualitiesAlg::LookupTable lookupTableProton;
+	      lar_content::NDQualitiesAlg::LookupTable lookupTableElectron;
+	      double InitialEnergy = 5000;
+	      double BinWidth = 1;
+	      double Mm = 105.66;               //now this is MeV 
+	      double Mp = 938.28;
+	      double Me = 0.511;
 
 	    if (lookupTableMuon.GetMap().empty()){
 	      lookupTableMuon.SetInitialEnergy(InitialEnergy); 
@@ -210,6 +220,7 @@ namespace lar_content
 	      this->FillLookupTable(lookupTableProton, Mp); 
 	    }
 
+
 	    if (lookupTableElectron.GetMap().empty()){
 	      lookupTableElectron.SetInitialEnergy(InitialEnergy); 
 	      lookupTableElectron.SetBinWidth(BinWidth);
@@ -217,11 +228,11 @@ namespace lar_content
 	      this->FillLookupTable(lookupTableElectron, Me); 
 	    }
 	    
-
 	    double TotalCharge = (0.f);
 	    double TotalHitWidth = (0.f);
 	    double TotalHitEnergy = (0.f);
 	    int hitsize = hitChargeVector.size();
+
 	    std::cout << "  " << std::endl;
 	    std::cout << "unbinned hit charge vector size : " << hitsize << std::endl;
 	    for (HitCharge &hitCharge : hitChargeVector)
@@ -246,6 +257,7 @@ namespace lar_content
 	    std::cout << "lookupTableM.GetMaxRange() " << lookupTableMuon.GetMaxRange() << std::endl;
 	    std::cout << "lookupTableP.GetMaxRange() " << lookupTableProton.GetMaxRange() << std::endl;
 	    std::cout << "lookupTableE.GetMaxRange() " << lookupTableElectron.GetMaxRange() << std::endl;
+
 	    lar_content::NDQualitiesAlg::HitChargeVector binnedHitChargeVector;
 	    BinHitChargeVector(hitChargeVector, binnedHitChargeVector);
 	    if ( binnedHitChargeVector.size() == 0) {
@@ -257,16 +269,9 @@ namespace lar_content
 	    std::cout << "  " << std::endl;
 
 	    //--------------------forwards fit--------------------------------------------------------------------------------
-	    //  int t;
-	    // t = std::clock();
-	    // time_t now;
-	    //  time_t now2;
-	    //  double seconds;
-	    //  time(&now);
-
 	    const int nParameters = 3;
 	    const std::string parName[nParameters]   = {"ENDENERGY", "SCALE", "EXTRA"};
-	    const double vstart[nParameters] = {2.1, 1.0, 0.0};
+	    const double vstart[nParameters] = {2.1, 1.0, 1.0};
 	    std::list<double> chisquaredlist;
 	    std::vector<double> dEdx_2D_av_list;
 	    std::vector<double> dEdx_2D_raw_av_list;
@@ -304,6 +309,7 @@ namespace lar_content
 		    double dEdx_2D_tot = 0.0;
 		    double dEdx_2D_raw_av = 0.0;
 		    double dEdx_2D_raw_tot = 0.0;
+
 		    int count = 0;
 		    //  double diff_raw_av = 0.0;
 		    //  double previous = 0.0;
@@ -411,6 +417,7 @@ namespace lar_content
 		    double dEdx_2D_raw_av = 0.0;
 		    int count = 0;
 		    front_f_dE = 0.0;
+
 		    // double diff_raw_av = 0.0;
 		    //   double previous = 0.0;
 		    //minimise this bit-----
@@ -492,6 +499,7 @@ namespace lar_content
 	    outpar[1] = p1list[indexvalue];
 	    outpar[2] = p2list[indexvalue];
 
+
 	    std::cout << "  " << std::endl;
 	    std::cout << "0 = : " << outpar[0] << std::endl;
 	    std::cout << "1 = : " << outpar[1] << std::endl;
@@ -560,6 +568,7 @@ namespace lar_content
 	    std::vector<double> p1list2;
 	    std::vector<double> p2list2;
 	    std::vector<int> countlist2;
+
 
 	    double dEdx_2D_av_b = 0.0;
 	    double dEdx_2D_raw_av_b = 0.0;
@@ -821,7 +830,6 @@ namespace lar_content
 	    std::cout << "dEdx_2D_raw = " << backwardsp[1]  << std::endl;
 
 
-
 	    //-----------get forawrds output details--------------------------------------------------------------------
 	    double f_Ee(outpar[0]), f_L(outpar[1] * trackLength);
 	    double andyenergy = 2.99817*0.0001*pow(trackLength, 1.26749) + 1.20364*0.001*pow(trackLength, 5.45196*0.1);
@@ -951,7 +959,6 @@ namespace lar_content
 		  double b_E_i = GetEnergyfromLength(lookupTableProton, b_L_i);
 		  b_dEdx_2D = outpar2[2] * (b_beta/b_alpha) * BetheBloch(b_E_i, Mp);
 
-
 		  // PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttree", "b_dEdx_2D", b_dEdx_2D ));
 		  // PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttree", "i", i));
 		  // PANDORA_MONITORING_API(FillTree(this->GetPandora(), "ttree"));
@@ -982,9 +989,9 @@ namespace lar_content
 
 		  double b_L_i = b_Ls + (outpar2[1] * (trackLength - hitCharge.GetLongitudinalPosition()));
 		  double b_E_i = GetEnergyfromLength(useLookup, b_L_i);
+
 		  b_dEdx_2D = outpar2[2] * (b_beta/b_alpha) * BetheBloch(b_E_i, Mm);
 		  b_dEdx_2D_average = b_dEdx_2D_average + std::abs(b_dEdx_2D);
-
 
 		  // PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttree", "b_dEdx_2D", b_dEdx_2D ));
 		  // PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttree", "i", i));
@@ -1127,6 +1134,7 @@ namespace lar_content
 	    float raw = 0.0;
 	    float front = 0.0;
 	    int countuse = 0;
+
 	    //  float diff = 0.0;
 	    
 
@@ -1141,6 +1149,7 @@ namespace lar_content
 	      if(forwardsChiSquared > backwardsChiSquared) {
 		minchisquaredval = backwardsChiSquared;
 		//std::cout << "minchisquaredval forwards  " << minchisquaredval << std::endl;
+
 
 		endenergy = b_Ee;
 		//foundenergy = endenergy + andyenergy;
@@ -1164,6 +1173,7 @@ namespace lar_content
 	      else if (forwardsChiSquared <= backwardsChiSquared) {
 		minchisquaredval = forwardsChiSquared;
 		//	std::cout << "minchisquaredval backwards   " << minchisquaredval << std::endl;
+
 		endenergy = f_Ee;
 		//	foundenergy = endenergy + andyenergy;
 		foundenergy = t_dEdx_total + endenergy;
@@ -1247,6 +1257,7 @@ namespace lar_content
 
 		ori = dEdx_2D_av_f;
 		raw = dEdx_2D_raw_av_f;
+
 		std::cout << "dEdx_2D_av_b " << raw << std::endl;
 		//	diff = dEdx_2D_raw_av_f_diff;
 		countuse = forwardscount;
@@ -1281,6 +1292,7 @@ namespace lar_content
 	      PANDORA_MONITORING_API(FillTree(this->GetPandora(), "ttreec"));
 	      // PANDORA_MONITORING_API(ScanTree(this->GetPandora(), "ttreec"));
 	    }
+
 
 	    if (isContainedShower == true){
 	      float foundenergy = 0;
@@ -1566,6 +1578,7 @@ namespace lar_content
     endPoint2 = slidingFit.GetGlobalMaxLayerPosition();
      
     std::cout <<" end points (Fill Hit Charge Vector) :  " << endPoint1 <<"    " << endPoint2 << std::endl;
+
 
     for (CaloHitList::const_iterator hitIter = caloHitList.begin(), hitIterEnd = caloHitList.end(); hitIter != hitIterEnd; ++hitIter)
       {
@@ -1864,7 +1877,9 @@ namespace lar_content
 	
         currentEnergy -= (currentdEdx * binWidth);
       }
+
     // std::cout << "maxBin " << maxBin << std::endl;
+
     //double maxRange(lookupTable.GetMaxRange());
 
     //remove redundant entries to make lookup much faster

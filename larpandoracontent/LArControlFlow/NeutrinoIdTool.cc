@@ -574,11 +574,11 @@ StatusCode NeutrinoIdTool<T>::ReadSettings(const TiXmlHandle xmlHandle)
     {
         std::string mvaName;
         PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle,
-            "MvaName", mvaName));
+            "SvmName", mvaName));
 
         std::string mvaFileName;
         PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, XmlHelper::ReadValue(xmlHandle,
-            "MvaFileName", mvaFileName));
+            "SvmFileName", mvaFileName));
 
         const std::string fullMvaFileName(LArFileHelper::FindFileInPath(mvaFileName, m_filePathEnvironmentVariable));
         m_mva.Initialize(fullMvaFileName, mvaName);

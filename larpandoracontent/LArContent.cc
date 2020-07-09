@@ -40,6 +40,7 @@
 #include "larpandoracontent/LArControlFlow/PreProcessingAlgorithm.h"
 #include "larpandoracontent/LArControlFlow/SlicingAlgorithm.h"
 #include "larpandoracontent/LArControlFlow/StitchingCosmicRayMergingTool.h"
+#include "larpandoracontent/LArControlFlow/NDQualitiesAlg.h"
 
 #include "larpandoracontent/LArCustomParticles/PcaShowerParticleBuildingAlgorithm.h"
 #include "larpandoracontent/LArCustomParticles/TrackParticleBuildingAlgorithm.h"
@@ -279,7 +280,8 @@
     d("LArEnergyKickVertexSelection",           EnergyKickVertexSelectionAlgorithm)                                             \
     d("LArHitAngleVertexSelection",             HitAngleVertexSelectionAlgorithm)                                               \
     d("LArBdtVertexSelection",                  BdtVertexSelectionAlgorithm)                                                    \
-    d("LArSvmVertexSelection",                  SvmVertexSelectionAlgorithm)
+    d("LArSvmVertexSelection",                  SvmVertexSelectionAlgorithm)                                                    \
+    d("LArNDQualitiesAlg",                      NDQualitiesAlg)  
 
 #define LAR_ALGORITHM_TOOL_LIST(d)                                                                                              \
     d("LArBdtBeamParticleId",                   BdtBeamParticleIdTool)                                                          \
