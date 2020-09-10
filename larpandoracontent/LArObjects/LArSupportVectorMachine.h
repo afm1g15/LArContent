@@ -297,16 +297,21 @@ inline double SupportVectorMachine::CalculateClassificationScore(const LArMvaHel
 
 inline double SupportVectorMachine::CalculateProbability(const LArMvaHelper::MvaFeatureVector &features) const
 {
+  // std::cout << "LArSVM.h start" << std::endl;
+  // std::cout << "m_enableProbability " << m_enableProbability << std::endl;
+  // m_enableProbability = true;
+  
     if (!m_enableProbability)
     {
         std::cout << "LArSupportVectorMachine: cannot calculate probabilities for this SVM" << std::endl;
         throw pandora::STATUS_CODE_NOT_INITIALIZED;
     }
-
+  
     // Use the logistic function to map the linearly-transformed score on the interval (-inf,inf) to a probability on [0,1] - the two free
     // parameters in the linear transformation are trained such that the logistic map produces an accurate probability
     const double scaledScore = m_probAParameter * this->CalculateClassificationScoreImpl(features) + m_probBParameter;
 
+    // std::cout << "LArSVM.h near end" << std::endl;
     return 1. / (1. + std::exp(scaledScore));
 }
 

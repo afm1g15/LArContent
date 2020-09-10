@@ -9,10 +9,11 @@
 #define LAR_COSMIC_RAY_TAGGING_TOOL_H 1
 
 #include "larpandoracontent/LArControlFlow/MasterAlgorithm.h"
+//#include "larpandoracontent/LArControlFlow/TrackDirectionTool.h"
 
 #include "larpandoracontent/LArObjects/LArThreeDSlidingFitResult.h"
 
-#include <unordered_map>
+//#include <unordered_map>
 
 namespace lar_content
 {
@@ -31,7 +32,195 @@ public:
     pandora::StatusCode Initialize();
     void FindAmbiguousPfos(const pandora::PfoList &parentCosmicRayPfos, pandora::PfoList &ambiguousPfos, const MasterAlgorithm *const pAlgorithm);
 
+    /* class HitCharge */
+    /* { */
+    /* public: */
+
+    /*     HitCharge(const pandora::CaloHit* caloHit, float &longitudinalPosition, float &hitWidth, float &hitCharge, float &uncertainty); */
+    /*     HitCharge(); */
+
+    /*     const pandora::CaloHit* GetCaloHit() const; */
+    /*     float GetLongitudinalPosition() const; */
+    /*     float GetHitWidth() const; */
+    /*     float GetCharge() const; */
+    /*     float GetChargeOverWidth() const; */
+    /*     float GetUncertainty() const; */
+
+    /*     void SetDistanceToNN(float &distance); */
+    /*     float GetDistanceToNN() const; */
+
+    /*     void SetForwardsFitCharge(float &Q_fit_f);  */
+    /*     void SetForwardsSigma(float &f_sigma); */
+    /*     void SetForwardsDelta(float &forwardsDelta); */
+    /*     void SetForwardsChiSquared(float &forwardsHitChisquared); */
+
+    /*     void SetBackwardsFitCharge(float &Q_fit_b);  */
+    /*     void SetBackwardsSigma(float &b_sigma); */
+    /*     void SetBackwardsDelta(float &backwardsDelta); */
+    /*     void SetBackwardsChiSquared(float &backwardsHitChisquared); */
+
+    /*     float GetForwardsFitCharge();  */
+    /*     float GetForwardsSigma(); */
+    /*     float GetForwardsDelta(); */
+    /*     float GetForwardsChiSquared(); */
+
+    /*     float GetBackwardsFitCharge();  */
+    /*     float GetBackwardsSigma(); */
+    /*     float GetBackwardsDelta(); */
+    /*     float GetBackwardsChiSquared(); */
+
+    /*     bool                                       m_intails; */
+
+    /* private: */
+    /*     const pandora::CaloHit*                    m_calohit; */
+    /*     float                                      m_longitudinalposition;    ///< */
+    /*     float                                      m_hitwidth;                ///< */
+    /*     float                                      m_charge;                  ///< */
+    /*     float                                      m_qoverx;                  ///< */
+    /*     float                                      m_uncertainty;          ///< */
+    /*     float                                      m_distancetonearestneighbour;          ///< */
+
+    /*     float                                      m_forwardsfitcharge; */
+    /*     float                                      m_forwardssigma; */
+    /*     float                                      m_forwardsdelta; */
+    /*     float                                      m_forwardschisquared; */
+
+    /*     float                                      m_backwardsfitcharge; */
+    /*     float                                      m_backwardssigma; */
+    /*     float                                      m_backwardsdelta; */
+    /*     float                                      m_backwardschisquared; */
+    /* }; */
+
+    /* typedef std::vector<HitCharge> HitChargeVector; */
+
+    /* class SplitObject */
+    /* { */
+    /* public: */
+
+    /*     SplitObject(); */
+    /*     SplitObject(int beforeNumerHits, int afterNumberHits, float beforeMinChiSquaredPerHit, float afterMinChiSquaredPerhit, float chiSquaredPerHitChange, float splitPosition); */
+    /*     SplitObject(int beforeNumberHits, int afterNumberHits, float beforeMinChiSquaredPerHit, float afterMinChiSquaredPerHit, float chiSquaredPerHitChange, float splitPosition, bool splitApplied, float beforeDeltaChiSquaredPerHit);  */
+
+    /*     void   SetBeforeNHits(int beforeNumberHits); */
+    /*     void   SetAfterNHits(int afterNumberHits); */
+    /*     void   SetBeforeMinChiSquaredPerHit(float beforeMinChiSquaredPerHit); */
+    /*     void   SetAfterMinChiSquaredPerHit(float afterMinChiSquaredPerHit); */
+    /*     void   SetMinChiSquaredPerHitChange(float chiSquaredPerHitChange); */
+    /*     void   SetSplitPosition(float splitPosition); */
+    /*     void   SetSplitApplied(bool splitApplied); */
+    /*     void   SetBeforeDeltaChiSquaredPerHit(float beforeDeltaChiSquaredPerHit); */
+
+    /*     int    GetBeforeNHits(); */
+    /*     int    GetAfterNHits(); */
+    /*     float  GetBeforeMinChiSquaredPerHit(); */
+    /*     float  GetAfterMinChiSquaredPerHit(); */
+    /*     float  GetMinChiSquaredPerHitChange(); */
+    /*     float  GetSplitPosition(); */
+    /*     bool   GetSplitApplied(); */
+    /*     float  GetBeforeDeltaChiSquaredPerHit(); */
+    
+
+    /* private: */
+    /*     int                                         m_beforenhits; */
+    /*     int                                         m_afternhits; */
+    /*     float                                       m_beforeminchisquaredperhit; */
+    /*     float                                       m_afterminchisquaredperhit; */
+    /*     float                                       m_chisquaredperhitchange; */
+    /*     float                                       m_splitposition; */
+    /*     bool                                        m_splitapplied; */
+    /*     float                                       m_beforedeltachisquaredperhit;         */
+    /* }; */
+
+    /* class DirectionFitObject */
+    /* { */
+    /* public: */
+
+    /*     DirectionFitObject(); */
+    /*     DirectionFitObject(HitChargeVector &hitChargeVector, int &numberHits, float &meanChargeOverWidth, float &forwardsChiSquared, float &backwardsChiSquared); */
+    /*     DirectionFitObject(HitChargeVector &hitChargeVector, HitChargeVector &forwardsRecoHits, HitChargeVector &backwardsRecoHits, int &numberHits, float &meanChargeOverWidth, float &forwardsChiSquared, float &backwardsChiSquared); */
+
+    /*     TrackDirectionTool::HitChargeVector GetHitChargeVector(); */
+    /*     TrackDirectionTool::HitChargeVector GetForwardsFitCharges(); */
+    /*     TrackDirectionTool::HitChargeVector GetBackwardsFitCharges(); */
+
+    /*     void SetForwardsFitCharges(TrackDirectionTool::HitChargeVector hitChargeVector); */
+    /*     void SetBackwardsFitCharges(TrackDirectionTool::HitChargeVector hitChargeVector); */
+    /*     float GetForwardsChiSquared(); */
+    /*     float GetBackwardsChiSquared(); */
+    /*     void SetForwardsChiSquared(float forwardsChiSquared); */
+    /*     void SetBackwardsChiSquared(float backwardsChiSquared); */
+    /*     float GetForwardsChiSquaredPerHit(); */
+    /*     float GetBackwardsChiSquaredPerHit(); */
+
+    /*     void SetNHits(float numberHits); */
+    /*     int GetNHits(); */
+    /*     int GetDirectionEstimate(); */
+
+    /*     float GetMinChiSquared(); */
+    /*     float GetMinChiSquaredPerHit(); */
+    /*     float GetDeltaChiSquaredPerHit(); */
+    /*     float GetMeanChargeOverWidth(); */
+
+    /*     void SetBeginpoint(const pandora::CartesianVector &beginPoint); */
+    /*     void SetEndpoint(const pandora::CartesianVector &endPoint); */
+    /*     const pandora::CartesianVector GetBeginpoint(); */
+    /*     const pandora::CartesianVector GetEndpoint(); */
+
+    /*     void SetProbability(float &probability); */
+    /*     float GetProbability(); */
+    /*     void SetHypothesis(int hypothesis); */
+    /*     int GetHypothesis(); */
+
+    /*     void SetSplitObject(SplitObject splitObject); */
+    /*     SplitObject GetSplitObject(); */
+    /*     void SetTEFObject(SplitObject tefObject); */
+    /*     SplitObject GetTEFObject(); */
+    /*     void SetFRObject(SplitObject frObject); */
+    /*     SplitObject GetFRObject(); */
+
+    /*     void DrawFit(); */
+
+    /*     void SetMCDirection(int direction); */
+    /*     int GetMCDirection(); */
+
+    /*     void Print(); */
+
+    /* private: */
+    /*     HitChargeVector     m_hitchargevector; */
+    /*     HitChargeVector     m_forwardsrecohits; */
+    /*     HitChargeVector     m_backwardsrecohits; */
+
+    /*     int                 m_nhits; */
+    /*     int                 m_hypothesis; */
+
+    /*     float               m_meanqoverx; */
+    /*     float               m_forwardschisquared; */
+    /*     float               m_backwardschisquared; */
+    /*     float               m_probability; */
+    
+    /*     float               m_beginx; //Beginpoint is defined as the track endpoint with the lowest Z coordinate */
+    /*     float               m_beginy; */
+    /*     float               m_beginz; */
+
+    /*     float               m_endx; //Endpoint is defined as the track endpoint with the highest Z coordinate */
+    /*     float               m_endy; */
+    /*     float               m_endz; */
+
+    /*     int                 m_mcdirection; */
+
+    /*     SplitObject         m_splitobject; */
+    /*     SplitObject         m_tefobject; */
+    /*     SplitObject         m_frobject; */
+    /* }; */
+
+    /* CosmicRayTaggingTool::DirectionFitObject GetClusterDirection(const pandora::Cluster *const pTargetClusterW); */
+    /* CosmicRayTaggingTool::DirectionFitObject GetPfoDirection(const pandora::ParticleFlowObject *const pPfo); */
+
 private:
+
+    //const pandora::Cluster* GetTargetClusterFromPFO(const pandora::ParticleFlowObject* PFO, const LArTrackStateVector &trackStateVector);
+
+
     /**
      *  @brief  Class to encapsulate the logic required determine if a Pfo should or shouldn't be tagged as a cosmic ray
      */
@@ -214,7 +403,82 @@ private:
     float           m_face_Yt;                  ///< Top        Y face
     float           m_face_Zu;                  ///< Upstream   Z face
     float           m_face_Zd;                  ///< Downstream Z face
+
+    //TrackDirectionTool      *m_pTrackDirectionTool;
+    //typedef std::vector<TrackDirectionTool*> TrackDirectionToolVector;
+    //TrackDirectionToolVector           m_TrackDirectionToolVector;
 };
+
+/* inline CosmicRayTaggingTool::DirectionFitObject::DirectionFitObject() */
+/* { */
+/*     HitChargeVector emptyVector; */
+/*     m_hitchargevector = (emptyVector); */
+/*     m_forwardsrecohits = (emptyVector); */
+/*     m_backwardsrecohits = (emptyVector); */
+/*     m_nhits = 0; */
+/*     m_hypothesis = 0; */
+/*     m_meanqoverx = 0.f; */
+/*     m_forwardschisquared = 0.f; */
+/*     m_backwardschisquared = 0.f; */
+/*     m_probability = 0.5; */
+/*     m_mcdirection = -1; */
+/*     SplitObject splitObject; */
+/*     m_splitobject = splitObject; */
+/*     m_tefobject = splitObject; */
+/*     m_frobject = splitObject; */
+/* } */
+
+/* inline CosmicRayTaggingTool::DirectionFitObject::DirectionFitObject(HitChargeVector &hitChargeVector, int &numberHits, float &meanChargeOverWidth, float &forwardsChiSquared, float &backwardsChiSquared) */
+/* { */
+/*     HitChargeVector emptyVector; */
+/*     m_hitchargevector = hitChargeVector; */
+/*     m_forwardsrecohits = emptyVector; */
+/*     m_backwardsrecohits = emptyVector; */
+/*     m_nhits = numberHits; */
+/*     m_hypothesis = 0; */
+/*     m_meanqoverx = meanChargeOverWidth; */
+/*     m_forwardschisquared = forwardsChiSquared; */
+/*     m_backwardschisquared = backwardsChiSquared; */
+/*     m_probability = 0.5; */
+/*     m_mcdirection = -1; */
+/*     SplitObject splitObject; */
+/*     m_splitobject = splitObject; */
+/*     m_tefobject = splitObject; */
+/*     m_frobject = splitObject; */
+/* } */
+
+/* //------------------------------------------------------------------------------------------------------------------------------------------ */
+
+/* inline CosmicRayTaggingTool::DirectionFitObject::DirectionFitObject(HitChargeVector &hitChargeVector, HitChargeVector &forwardsRecoHits, HitChargeVector &backwardsRecoHits, int &numberHits, float &meanChargeOverWidth, float &forwardsChiSquared, float &backwardsChiSquared) : */
+/*     m_hitchargevector(hitChargeVector), */
+/*     m_forwardsrecohits(forwardsRecoHits), */
+/*     m_backwardsrecohits(backwardsRecoHits), */
+/*     m_nhits(numberHits), */
+/*     m_meanqoverx(meanChargeOverWidth), */
+/*     m_forwardschisquared(forwardsChiSquared), */
+/*     m_backwardschisquared(backwardsChiSquared) */
+/* { */
+/*     m_hypothesis = 0; */
+/*     m_probability = 0.5; */
+/*     m_mcdirection = -1; */
+/*     SplitObject splitObject; */
+/*     m_splitobject = splitObject; */
+/*     m_tefobject = splitObject; */
+/*     m_frobject = splitObject; */
+/* } */
+
+/* inline void CosmicRayTaggingTool::DirectionFitObject::SetSplitObject(CosmicRayTaggingTool::SplitObject splitObject) */
+/* { */
+/*     m_splitobject = splitObject; */
+/* } */
+
+/* //------------------------------------------------------------------------------------------------------------------------------------------ */
+
+/* inline CosmicRayTaggingTool::SplitObject CosmicRayTaggingTool::DirectionFitObject::GetSplitObject() */
+/* { */
+/*     return m_splitobject; */
+/* } */
+
 
 } // namespace lar_content
 

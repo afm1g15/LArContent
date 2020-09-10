@@ -320,7 +320,9 @@ public:
      *  @param  foldBackHierarchy whether to fold the particle hierarchy back to the primaries
      */
     static void GetPfoToReconstructable2DHitsMap(const pandora::PfoList &pfoList, const MCContributionMap &selectedMCParticleToHitsMap,
-        PfoContributionMap &pfoToReconstructable2DHitsMap, const bool foldBackHierarchy);
+
+						 PfoContributionMap &pfoToReconstructable2DHitsMap, const bool foldBackHierarchy);
+
 
     /**
      *  @brief  Get mapping from Pfo in reconstructed test beam hierarchy to reconstructable 2D hits (=good hits belonging to a selected
@@ -402,7 +404,8 @@ private:
      *  @param  foldBackHierarchy whether to fold the particle hierarchy back to primaries
      */
     static void CollectReconstructable2DHits(const pandora::ParticleFlowObject *const pPfo, const MCContributionMapVector &selectedMCParticleToHitsMaps,
-        pandora::CaloHitList &reconstructableCaloHitList2D, const bool foldBackHierarchy);
+					     pandora::CaloHitList &reconstructableCaloHitList2D, const bool foldBackHierarchy);
+
 
     /**
      *  @brief  For a given Pfo, collect the hits which are reconstructable (=good hits belonging to a selected reconstructable MCParticle)
