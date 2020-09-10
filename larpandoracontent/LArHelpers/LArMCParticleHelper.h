@@ -276,7 +276,7 @@ public:
      *  @param  pfoToReconstructable2DHitsMap the output mapping from Pfos to their reconstructable 2D hits
      */
     static void GetPfoToReconstructable2DHitsMap(const pandora::PfoList &pfoList, const MCContributionMap &selectedMCParticleToHitsMap,
-        PfoContributionMap &pfoToReconstructable2DHitsMap);
+						 PfoContributionMap &pfoToReconstructable2DHitsMap);
 
     /**
      *  @brief  Get mapping from Pfo in reconstructed test beam hierarchy to reconstructable 2D hits (=good hits belonging to a selected
@@ -343,7 +343,7 @@ private:
      *  @param  reconstructableCaloHitList2D the output list of reconstructable 2D calo hits in the input pfo
      */
     static void CollectReconstructable2DHits(const pandora::ParticleFlowObject *const pPfo, const MCContributionMapVector &selectedMCParticleToHitsMaps,
-        pandora::CaloHitList &reconstructableCaloHitList2D);
+					     pandora::CaloHitList &reconstructableCaloHitList2D);
 
     /**
      *  @brief  For a given Pfo, collect the hits which are reconstructable (=good hits belonging to a selected reconstructable MCParticle)

@@ -29,6 +29,7 @@ set( subdir_list LArCheating
 		 LArTwoDReco/LArCosmicRay
 		 LArUtility
 		 LArVertex
+		 LArDirection
 )
 
 cet_make( LIBRARY_NAME LArPandoraContent

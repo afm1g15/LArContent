@@ -13,6 +13,9 @@
 
 #include "larpandoracontent/LArControlFlow/MultiPandoraApi.h"
 
+#include "Pandora/Algorithm.h"
+//#include "larpandoracontent/LArControlFlow/TrackDirectionTool.h"
+
 #include <unordered_map>
 
 namespace lar_content
@@ -22,6 +25,8 @@ class StitchingBaseTool;
 class CosmicRayTaggingBaseTool;
 class SliceIdBaseTool;
 class LArMCParticleFactory;
+class TrackDirectionBaseTool;
+
 
 typedef std::vector<pandora::CaloHitList> SliceVector;
 typedef std::vector<pandora::PfoList> SliceHypotheses;
@@ -40,6 +45,7 @@ public:
      *  @brief  Default constructor
      */
     MasterAlgorithm();
+    virtual ~MasterAlgorithm();
 
     /**
      *  @brief  External steering parameters class
@@ -139,7 +145,8 @@ protected:
      *  @param  clearCosmicRayPfos to receive the list of clear cosmic-ray pfos
      *  @param  ambiguousPfos to receive the list of ambiguous cosmic-ray pfos for further analysis
      */
-    pandora::StatusCode TagCosmicRayPfos(const PfoToFloatMap &stitchedPfosToX0Map, pandora::PfoList &clearCosmicRayPfos, pandora::PfoList &ambiguousPfos) const;
+    // pandora::StatusCode TagCosmicRayPfos(const PfoToFloatMap &stitchedPfosToX0Map, pandora::PfoList &clearCosmicRayPfos, pandora::PfoList &ambiguousPfos, bool &directioncosmic, float &downprobability, float &deltachi2, float &deltachi2alone, float &minchi2perhit, bool &incomplete) const;
+    pandora::StatusCode TagCosmicRayPfos(const PfoToFloatMap &stitchedPfosToX0Map, pandora::PfoList &clearCosmicRayPfos, pandora::PfoList &ambiguousPfos, bool &directioncosmic, float &downprobability) const;
 
     /**
      *  @brief  Run cosmic-ray hit removal, freeing hits in ambiguous pfos for further processing
@@ -171,7 +178,7 @@ protected:
      *  @param  nuSliceHypotheses the vector of slice neutrino hypotheses
      *  @param  crSliceHypotheses the vector of slice cosmic-ray hypotheses
      */
-    pandora::StatusCode SelectBestSliceHypotheses(const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses) const;
+    pandora::StatusCode SelectBestSliceHypotheses(const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses, const SliceVector &sliceVector) const;
 
     /**
      *  @brief  Reset all worker instances
@@ -332,6 +339,10 @@ protected:
     CosmicRayTaggingToolVector  m_cosmicRayTaggingToolVector;       ///< The cosmic-ray tagging tool vector
     SliceIdToolVector           m_sliceIdToolVector;                ///< The slice id tool vector
 
+    //TrackDirectionTool      *m_pTrackDirectionTool;
+    typedef std::vector<TrackDirectionBaseTool*> TrackDirectionToolVector;
+    TrackDirectionToolVector           m_trackDirectionToolVector;
+
     std::string                 m_filePathEnvironmentVariable;      ///< The environment variable providing a list of paths to xml files
     std::string                 m_crSettingsFile;                   ///< The cosmic-ray reconstruction settings file
     std::string                 m_nuSettingsFile;                   ///< The neutrino reconstruction settings file
@@ -342,6 +353,10 @@ protected:
     std::string                 m_recreatedPfoListName;             ///< The output recreated pfo list name
     std::string                 m_recreatedClusterListName;         ///< The output recreated cluster list name
     std::string                 m_recreatedVertexListName;          ///< The output recreated vertex list name
+
+    std::string             m_clusterListName;         ///< The requested calo hit list name
+    std::string             m_pfoListName;         ///< The requested calo hit list name
+
 
     float                       m_inTimeMaxX0;                      ///< Cut on X0 to determine whether particle is clear cosmic ray
 };
@@ -402,9 +417,30 @@ public:
      *  @param  crSliceHypotheses the parent pfos representing the cosmic-ray muon outcome for each slice
      *  @param  sliceNuPfos to receive the list of selected pfos
      */
-    virtual void SelectOutputPfos(const pandora::Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses,
-        pandora::PfoList &selectedPfos) = 0;
+  virtual void SelectOutputPfos(const pandora::Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses,
+				pandora::PfoList &selectedPfos, const PfoToFloatMap &pfotoprobabilitymapb, const SliceVector &sliceVector) = 0;
 };
+//-------------------------------------------------------------------------------------------------------------------------------------------
+
+/**
+*  @brief  TrackDirectionBaseTool class
+*/
+class TrackDirectionBaseTool : public pandora::AlgorithmTool
+{
+public:
+   /**
+    *  @brief  Find direction of a track
+           *
+    *  @param  parentCosmicRayPfos the list of parent cosmic-ray pfos
+    *  @param  ambiguousPfos to receive the list of ambiguous pfos 
+    *  @param  pAlgorithm the address of this master algorithm
+    */
+  // virtual void  FindDirections(const pandora::ParticleFlowObject *const pPfo, bool &directioncosmic, float &downprobability, float &deltachi2, float &deltachi2alone, float &minchi2perhit, bool &incomplete, const MasterAlgorithm *const pAlgorithm) = 0;
+   virtual void  FindDirections(const pandora::ParticleFlowObject *const pPfo, bool &directioncosmic, float &downprobability, const MasterAlgorithm *const pAlgorithm) = 0;
+};
+
+//------------------------------------------------------------------------------------------------------------------------------------------
+//
 
 } // namespace lar_content
 

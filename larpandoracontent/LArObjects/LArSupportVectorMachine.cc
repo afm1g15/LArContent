@@ -17,7 +17,7 @@ namespace lar_content
 
 SupportVectorMachine::SupportVectorMachine() :
     m_isInitialized(false),
-    m_enableProbability(false),
+    m_enableProbability(true),
     m_probAParameter(0.),
     m_probBParameter(0.),
     m_standardizeFeatures(true),
@@ -43,6 +43,7 @@ StatusCode SupportVectorMachine::Initialize(const std::string &parameterLocation
     this->ReadXmlFile(parameterLocation, svmName);
 
     // Check the sizes of sigma and scale factor if they are to be used as divisors
+    //std::cout << "m_standardizeFeatures " << m_standardizeFeatures << std::endl;
     if (m_standardizeFeatures)
     {
         for (const FeatureInfo &featureInfo : m_featureInfoList)
@@ -57,6 +58,7 @@ StatusCode SupportVectorMachine::Initialize(const std::string &parameterLocation
 
     // Check the number of features is consistent.
     m_nFeatures = m_featureInfoList.size();
+    // std::cout << "m_nFeatures " << m_nFeatures << std::endl;
 
     for (const SupportVectorInfo &svInfo : m_svInfoList)
     {
@@ -66,6 +68,7 @@ StatusCode SupportVectorMachine::Initialize(const std::string &parameterLocation
             throw StatusCodeException(STATUS_CODE_INVALID_PARAMETER);
         }
     }
+    //std::cout << "Just middle initialise" << std::endl;
 
     // There's the possibility of a user-defined kernel that doesn't use this as a divisor but let's be safe
     if (m_scaleFactor < std::numeric_limits<double>::epsilon())
@@ -75,6 +78,7 @@ StatusCode SupportVectorMachine::Initialize(const std::string &parameterLocation
     }
 
     m_isInitialized = true;
+    //std::cout << "Just before end initialise" << std::endl;
     return STATUS_CODE_SUCCESS;
 }
 
@@ -82,6 +86,7 @@ StatusCode SupportVectorMachine::Initialize(const std::string &parameterLocation
 
 void SupportVectorMachine::ReadXmlFile(const std::string &svmFileName, const std::string &svmName)
 {
+  //std::cout << "SVM: ReadXmlFile start" << ::std::endl;
     TiXmlDocument xmlDocument(svmFileName);
 
     if (!xmlDocument.LoadFile())
@@ -136,12 +141,14 @@ void SupportVectorMachine::ReadXmlFile(const std::string &svmFileName, const std
 
         pCurrentXmlElement = pCurrentXmlElement->NextSiblingElement();
     }
+    //std::cout << "SVM:ReadXmlFile end" << std::endl;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
 StatusCode SupportVectorMachine::ReadComponent(TiXmlElement *pCurrentXmlElement)
 {
+  // std::cout << "SVM:ReadComponant start" << std::endl;
     const std::string componentName(pCurrentXmlElement->ValueStr());
     const TiXmlHandle currentHandle(pCurrentXmlElement);
 
@@ -157,6 +164,7 @@ StatusCode SupportVectorMachine::ReadComponent(TiXmlElement *pCurrentXmlElement)
     if (std::string("SupportVector") == componentName)
         return this->ReadSupportVector(currentHandle);
 
+    // std::cout << "SVM:ReadComponant end" << std::endl;
     return STATUS_CODE_INVALID_PARAMETER;
 }
 
@@ -164,6 +172,7 @@ StatusCode SupportVectorMachine::ReadComponent(TiXmlElement *pCurrentXmlElement)
 
 StatusCode SupportVectorMachine::ReadMachine(const TiXmlHandle &currentHandle)
 {
+  //std::cout << "SVM:ReadMachine start" << std::endl;
     int kernelType(0);
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(currentHandle,
         "KernelType", kernelType));
@@ -202,6 +211,7 @@ StatusCode SupportVectorMachine::ReadMachine(const TiXmlHandle &currentHandle)
     if (kernelType != USER_DEFINED) // if user-defined, leave it so it alone can be set before/after initialization
         m_kernelFunction = m_kernelMap.at(m_kernelType);
 
+    //std::cout << "SVM:ReadMachine end" << std::endl;
     return STATUS_CODE_SUCCESS;
 }
 
@@ -209,6 +219,7 @@ StatusCode SupportVectorMachine::ReadMachine(const TiXmlHandle &currentHandle)
 
 StatusCode SupportVectorMachine::ReadFeatures(const TiXmlHandle &currentHandle)
 {
+  // std::cout << "SVM:ReadFeatures start" << std::endl;
     std::vector<double> muValues;
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadVectorOfValues(currentHandle,
         "MuValues", muValues));
@@ -229,6 +240,7 @@ StatusCode SupportVectorMachine::ReadFeatures(const TiXmlHandle &currentHandle)
     for (std::size_t i = 0; i < muValues.size(); ++i)
         m_featureInfoList.emplace_back(muValues.at(i), sigmaValues.at(i));
 
+    // std::cout << "SVM:ReadFeatures end" << std::endl;
     return STATUS_CODE_SUCCESS;
 }
 
@@ -236,6 +248,7 @@ StatusCode SupportVectorMachine::ReadFeatures(const TiXmlHandle &currentHandle)
 
 StatusCode SupportVectorMachine::ReadSupportVector(const TiXmlHandle &currentHandle)
 {
+  // std::cout << "SVM:ReadSupportVector start" << std::endl;
     double yAlpha(0.0);
     PANDORA_RETURN_RESULT_IF_AND_IF(STATUS_CODE_SUCCESS, STATUS_CODE_NOT_FOUND, !=, XmlHelper::ReadValue(currentHandle,
         "AlphaY", yAlpha));
@@ -248,7 +261,11 @@ StatusCode SupportVectorMachine::ReadSupportVector(const TiXmlHandle &currentHan
     for (const double &value : values)
         valuesFeatureVector.emplace_back(value);
 
+    // std::cout << "yAlpha: " << yAlpha << std::endl;
+    // std::cout << "valuesFeatureVector size : "<< valuesFeatureVector.size() << std::endl;
+
     m_svInfoList.emplace_back(yAlpha, valuesFeatureVector);
+    // std::cout << "SVM:ReadSupportVector end" << std::endl;
     return STATUS_CODE_SUCCESS;
 }
 
@@ -256,6 +273,7 @@ StatusCode SupportVectorMachine::ReadSupportVector(const TiXmlHandle &currentHan
 
 double SupportVectorMachine::CalculateClassificationScoreImpl(const LArMvaHelper::MvaFeatureVector &features) const
 {
+  // std::cout << "SVM:Score start" << std::endl;
     if (!m_isInitialized)
     {
         std::cout << "SupportVectorMachine: could not perform classification because the svm was uninitialized" << std::endl;
@@ -284,6 +302,8 @@ double SupportVectorMachine::CalculateClassificationScoreImpl(const LArMvaHelper
             m_kernelFunction(supportVectorInfo.m_supportVector, (m_standardizeFeatures ? standardizedFeatures : features), m_scaleFactor);
     }
 
+    // std::cout << "return: " << classScore + m_bias << std::endl;
+    // std::cout << "SVM:Score end" << std::endl;
     return classScore + m_bias;
 }
 

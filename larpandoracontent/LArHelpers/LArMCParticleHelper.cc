@@ -494,9 +494,9 @@ void LArMCParticleHelper::SelectReconstructableTestBeamHierarchyMCParticles(cons
 //------------------------------------------------------------------------------------------------------------------------------------------
 
 void LArMCParticleHelper::GetPfoToReconstructable2DHitsMap(const PfoList &pfoList, const MCContributionMap &selectedMCParticleToHitsMap,
-    PfoContributionMap &pfoToReconstructable2DHitsMap)
+							   PfoContributionMap &pfoToReconstructable2DHitsMap)
 {
-    LArMCParticleHelper::GetPfoToReconstructable2DHitsMap(pfoList, MCContributionMapVector({selectedMCParticleToHitsMap}), pfoToReconstructable2DHitsMap);
+  LArMCParticleHelper::GetPfoToReconstructable2DHitsMap(pfoList, MCContributionMapVector({selectedMCParticleToHitsMap}), pfoToReconstructable2DHitsMap);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -510,7 +510,7 @@ void LArMCParticleHelper::GetTestBeamHierarchyPfoToReconstructable2DHitsMap(cons
 //------------------------------------------------------------------------------------------------------------------------------------------
 
 void LArMCParticleHelper::GetPfoToReconstructable2DHitsMap(const PfoList &pfoList, const MCContributionMapVector &selectedMCParticleToHitsMaps,
-    PfoContributionMap &pfoToReconstructable2DHitsMap)
+							   PfoContributionMap &pfoToReconstructable2DHitsMap)
 {
     for (const ParticleFlowObject *const pPfo : pfoList)
     {
@@ -525,7 +525,7 @@ void LArMCParticleHelper::GetPfoToReconstructable2DHitsMap(const PfoList &pfoLis
 //------------------------------------------------------------------------------------------------------------------------------------------
 
 void LArMCParticleHelper::GetTestBeamHierarchyPfoToReconstructable2DHitsMap(const PfoList &pfoList, const MCContributionMapVector &selectedMCParticleToHitsMaps,
-    PfoContributionMap &pfoToReconstructable2DHitsMap)
+									    PfoContributionMap &pfoToReconstructable2DHitsMap)
 {
     for (const ParticleFlowObject *const pPfo : pfoList)
     {
@@ -598,13 +598,13 @@ void LArMCParticleHelper::GetPfoMCParticleHitSharingMaps(const PfoContributionMa
 //------------------------------------------------------------------------------------------------------------------------------------------
 
 void LArMCParticleHelper::CollectReconstructable2DHits(const ParticleFlowObject *const pPfo, const MCContributionMapVector &selectedMCParticleToHitsMaps,
-    pandora::CaloHitList &reconstructableCaloHitList2D)
+						       pandora::CaloHitList &reconstructableCaloHitList2DMap)
 {
-    // Collect all 2D calo hits in pfo hierarchy
-    PfoList pfoList;
-    LArPfoHelper::GetAllDownstreamPfos(pPfo, pfoList);
+  // Collect all 2D calo hits in pfo hierarchy
+  PfoList pfoList;
+  LArPfoHelper::GetAllDownstreamPfos(pPfo, pfoList);
 
-    LArMCParticleHelper::CollectReconstructable2DHits(pfoList, selectedMCParticleToHitsMaps, reconstructableCaloHitList2D);
+  LArMCParticleHelper::CollectReconstructable2DHits(pfoList, selectedMCParticleToHitsMaps, reconstructableCaloHitList2DMap);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------

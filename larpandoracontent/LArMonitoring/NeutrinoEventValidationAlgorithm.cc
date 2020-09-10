@@ -67,10 +67,21 @@ void NeutrinoEventValidationAlgorithm::FillValidationInfo(const MCParticleList *
         PfoList finalStatePfos;
         for (const ParticleFlowObject *const pPfo : allConnectedPfos)
         {
+	  // if(pPfo->GetParticleId() == 12 || pPfo->GetParticleId() == 14 || pPfo->GetParticleId() == 16 || pPfo->GetParticleId() == 18) {
+	  //   std::cout << "pfo Id: " <<  pPfo->GetParticleId() << std::endl;
+	  //   std::cout << "pfo Energy: " <<  pPfo->GetEnergy() << std::endl;
+	  //   std::cout << "pfo NParents: " <<  pPfo->GetNParentPfos() << std::endl;
+	  //   std::cout << "pfo NDaughters: " <<  pPfo->GetNDaughterPfos() << std::endl;
+	  //   std::cout << "pfo charge: " << pPfo->GetCharge() << std::endl;
+	  //   std::cout << "pfo mass: " << pPfo->GetMass() << std::endl;
+	  //   std::cout << "pfo momentum: " << pPfo->GetMomentum() << std::endl;
+	  // }
+
+	  
             if (LArPfoHelper::IsFinalState(pPfo))
                 finalStatePfos.push_back(pPfo);
         }
-
+	LArMCParticleHelper::PrimaryParameters parameters;
         LArMCParticleHelper::PfoContributionMap pfoToHitsMap;
         LArMCParticleHelper::GetPfoToReconstructable2DHitsMap(finalStatePfos, validationInfo.GetAllMCParticleToHitsMap(), pfoToHitsMap);
 
