@@ -641,7 +641,7 @@ StatusCode MasterAlgorithm::Reset()
 
 StatusCode MasterAlgorithm::Copy(const Pandora *const pPandora, const CaloHit *const pCaloHit) const
 {
-    const LArCaloHit *const pLArCaloHit = dynamic_cast<const LArCaloHit*>(pCaloHit);
+  //const LArCaloHit *const pLArCaloHit = dynamic_cast<const LArCaloHit*>(pCaloHit);
     LArCaloHitParameters parameters;
     parameters.m_positionVector = pCaloHit->GetPositionVector();
     parameters.m_expectedDirection = pCaloHit->GetExpectedDirection();
@@ -664,12 +664,13 @@ StatusCode MasterAlgorithm::Copy(const Pandora *const pPandora, const CaloHit *c
     parameters.m_isInOuterSamplingLayer = pCaloHit->IsInOuterSamplingLayer();
     // ATTN Parent of calo hit in worker is corresponding calo hit in master
     parameters.m_pParentAddress = static_cast<const void*>(pCaloHit);
-    parameters.m_larTPCVolumeId = pLArCaloHit->GetLArTPCVolumeId();
+    // parameters.m_larTPCVolumeId = pLArCaloHit->GetLArTPCVolumeId();
+    parameters.m_larTPCVolumeId = 0;
 
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraApi::CaloHit::Create(*pPandora, parameters, m_larCaloHitFactory));
 
     if (m_passMCParticlesToWorkerInstances)
-    {
+    { /*
         MCParticleVector mcParticleVector;
         for (const auto &weightMapEntry : pLArCaloHit->GetMCParticleWeightMap())
             mcParticleVector.push_back(weightMapEntry.first);
@@ -680,6 +681,7 @@ StatusCode MasterAlgorithm::Copy(const Pandora *const pPandora, const CaloHit *c
             PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraApi::SetCaloHitToMCParticleRelationship(
                 *pPandora, pLArCaloHit, pMCParticle, pLArCaloHit->GetMCParticleWeightMap().at(pMCParticle)));
         }
+      */
     }
 
     return STATUS_CODE_SUCCESS;

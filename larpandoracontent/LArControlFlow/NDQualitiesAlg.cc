@@ -50,6 +50,37 @@ namespace lar_content
     float parentMinZ(pFirstLArTPC->GetCenterZ() - 0.5f * pFirstLArTPC->GetWidthZ());
     float parentMaxZ(pFirstLArTPC->GetCenterZ() + 0.5f * pFirstLArTPC->GetWidthZ());
 
+    lar_content::NDQualitiesAlg::LookupTable lookupTableMuon;
+    lar_content::NDQualitiesAlg::LookupTable lookupTableProton;
+    lar_content::NDQualitiesAlg::LookupTable lookupTableElectron;
+    double InitialEnergy = 5000;
+    double BinWidth = 0.01;
+    double Mm = 105.66;               //now this is MeV 
+    double Mp = 938.28;
+    double Me = 0.511;
+
+    if (lookupTableMuon.GetMap().empty()){
+      lookupTableMuon.SetInitialEnergy(InitialEnergy); 
+      lookupTableMuon.SetBinWidth(BinWidth);
+
+      this->FillLookupTable(lookupTableMuon, Mm); 
+    }
+
+    if (lookupTableProton.GetMap().empty()){
+      lookupTableProton.SetInitialEnergy(InitialEnergy); 
+      lookupTableProton.SetBinWidth(BinWidth);
+
+      this->FillLookupTable(lookupTableProton, Mp); 
+    }
+
+
+    if (lookupTableElectron.GetMap().empty()){
+      lookupTableElectron.SetInitialEnergy(InitialEnergy); 
+      lookupTableElectron.SetBinWidth(BinWidth);
+
+      this->FillLookupTable(lookupTableElectron, Me); 
+    }
+
 
     const PfoList *pPfoList = nullptr;
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraContentApi::GetList(*this, m_pfoListName, pPfoList));  //RecreatedPfos
@@ -166,9 +197,9 @@ namespace lar_content
 
 
 	//-------Send it through the TDT -------------------------------------------------------------------------------
-	//	if ((isContainedTrack == true  || isUnContainedTrack == true) && clusterList.size() == 4) {
-	//	if (clusterList.size() == 4) {
-	  if ((isContainedTrack == true  || isUnContainedTrack == true) && clusterList.size() == 4) {
+	//if ((isContainedTrack == true) && clusterList.size() == 4) {
+	//if (clusterList.size() == 4) {
+	if ((isContainedShower == true  || isUnContainedShower == true) && clusterList.size() == 4) {
 
 	     if(clusterList.size() !=0) {
 	      pCluster->GetOrderedCaloHitList().FillCaloHitList(caloHitList);
@@ -184,86 +215,57 @@ namespace lar_content
 
 
 	      //------set lookup tables and fit parameters----------------------------------------------------------------------------
-	      lar_content::NDQualitiesAlg::LookupTable lookupTableMuon;
-	      lar_content::NDQualitiesAlg::LookupTable lookupTableProton;
-	      lar_content::NDQualitiesAlg::LookupTable lookupTableElectron;
-	      double InitialEnergy = 5000;
-	      double BinWidth = 1;
-	      double Mm = 105.66;               //now this is MeV 
-	      double Mp = 938.28;
-	      double Me = 0.511;
+	     
+	      double TotalCharge = (0.f);
+	      double TotalHitWidth = (0.f);
+	      double TotalHitEnergy = (0.f);
+	      int hitsize = hitChargeVector.size();
 
-	    if (lookupTableMuon.GetMap().empty()){
-	      lookupTableMuon.SetInitialEnergy(InitialEnergy); 
-	      lookupTableMuon.SetBinWidth(BinWidth);
+	      std::cout << "  " << std::endl;
+	      std::cout << "unbinned hit charge vector size : " << hitsize << std::endl;
+	      for (HitCharge &hitCharge : hitChargeVector)
+		{
+		  TotalHitWidth += hitCharge.GetHitWidth();
+		  TotalCharge += hitCharge.GetCharge();
+		  TotalHitEnergy += hitCharge.GetCaloHit()->GetInputEnergy();
+		}
 
-	      this->FillLookupTable(lookupTableMuon, Mm); 
-	    }
-
-	    if (lookupTableProton.GetMap().empty()){
-	      lookupTableProton.SetInitialEnergy(InitialEnergy); 
-	      lookupTableProton.SetBinWidth(BinWidth);
-
-	      this->FillLookupTable(lookupTableProton, Mp); 
-	    }
-
-
-	    if (lookupTableElectron.GetMap().empty()){
-	      lookupTableElectron.SetInitialEnergy(InitialEnergy); 
-	      lookupTableElectron.SetBinWidth(BinWidth);
-
-	      this->FillLookupTable(lookupTableElectron, Me); 
-	    }
-	    
-	    double TotalCharge = (0.f);
-	    double TotalHitWidth = (0.f);
-	    double TotalHitEnergy = (0.f);
-	    int hitsize = hitChargeVector.size();
-
-	    std::cout << "  " << std::endl;
-	    std::cout << "unbinned hit charge vector size : " << hitsize << std::endl;
-	    for (HitCharge &hitCharge : hitChargeVector)
-	      {
-		TotalHitWidth += hitCharge.GetHitWidth();
-		TotalCharge += hitCharge.GetCharge();
-		TotalHitEnergy += hitCharge.GetCaloHit()->GetInputEnergy();
+	      double maxScaleM(lookupTableMuon.GetMaxRange()/trackLength);   //maxScale = maxrange/tracklength
+	      if (maxScaleM < 1.0) {
+		maxScaleM = 1.1;
 	      }
+	      double maxScaleP(lookupTableProton.GetMaxRange()/trackLength);
+	      if (maxScaleP < 1.0) {
+		maxScaleP = 1.1;
+	      }
+	      double maxScaleE(lookupTableElectron.GetMaxRange()/trackLength);
+	      if (maxScaleE < 1.0) {
+		maxScaleE = 1.1;
+	      }
+	      std::cout << "lookupTableM.GetMaxRange() " << lookupTableMuon.GetMaxRange() << std::endl;
+	      std::cout << "lookupTableP.GetMaxRange() " << lookupTableProton.GetMaxRange() << std::endl;
+	      std::cout << "lookupTableE.GetMaxRange() " << lookupTableElectron.GetMaxRange() << std::endl;
 
-	    double maxScaleM(lookupTableMuon.GetMaxRange()/trackLength);   //maxScale = maxrange/tracklength
-	    if (maxScaleM < 1.0) {
-	      maxScaleM = 1.1;
-	    }
-	    double maxScaleP(lookupTableProton.GetMaxRange()/trackLength);
-	    if (maxScaleP < 1.0) {
-	      maxScaleP = 1.1;
-	    }
-	    double maxScaleE(lookupTableElectron.GetMaxRange()/trackLength);
-	    if (maxScaleE < 1.0) {
-	      maxScaleE = 1.1;
-	    }
-	    std::cout << "lookupTableM.GetMaxRange() " << lookupTableMuon.GetMaxRange() << std::endl;
-	    std::cout << "lookupTableP.GetMaxRange() " << lookupTableProton.GetMaxRange() << std::endl;
-	    std::cout << "lookupTableE.GetMaxRange() " << lookupTableElectron.GetMaxRange() << std::endl;
+	      lar_content::NDQualitiesAlg::HitChargeVector binnedHitChargeVector;
+	      BinHitChargeVector(hitChargeVector, binnedHitChargeVector);
+	      if ( binnedHitChargeVector.size() == 0) {
+		binnedHitChargeVector = hitChargeVector;
+	      }  
 
-	    lar_content::NDQualitiesAlg::HitChargeVector binnedHitChargeVector;
-	    BinHitChargeVector(hitChargeVector, binnedHitChargeVector);
-	    if ( binnedHitChargeVector.size() == 0) {
-	      binnedHitChargeVector = hitChargeVector;
-	    }  
-
-	    int binnedsize = binnedHitChargeVector.size();
-	    std::cout << "binned hit charge vector size : " << binnedsize << std::endl;
-	    std::cout << "  " << std::endl;
+	      int binnedsize = binnedHitChargeVector.size();
+	      std::cout << "binned hit charge vector size : " << binnedsize << std::endl;
+	      std::cout << "  " << std::endl;
 
 	    //--------------------forwards fit--------------------------------------------------------------------------------
 	    const int nParameters = 3;
 	    const std::string parName[nParameters]   = {"ENDENERGY", "SCALE", "EXTRA"};
-	    const double vstart[nParameters] = {2.1, 1.0, 1.0};
+	    const double vstart[nParameters] = {2.1, 1.0, 0.5};
 	    std::list<double> chisquaredlist;
 	    std::vector<double> dEdx_2D_av_list;
 	    std::vector<double> dEdx_2D_raw_av_list;
 	    std::vector<double> dEdx_2D_tot_list;
 	    std::vector<double> dEdx_2D_raw_tot_list;
+            std::vector<double> bethe_tot_list;
 	    //  std::vector<double> diff_raw_list;
 	    std::vector<double> p0list;
 	    std::vector<double> p1list;
@@ -275,12 +277,26 @@ namespace lar_content
 	    // double dEdx_2D_raw_av_f_diff = 0.0;
 	    double dEdx_dE_total_f = 0.0;
 	    double dEdx_dE_total_raw_f = 0.0;
+	    double bethe_f = 0.0;
 	    int forwardscount = 0;
 	    // double changeval = 0.0
 
 	    if (isContainedTrack == true) {                                            //if a contained track
-	      const double step[nParameters] = {1, 100, 1};
+	      const double step[nParameters] = {0.01, 10.0, 1.0};
 	      const double highphysbound[nParameters] = {25, maxScaleP, 5};
+
+	      
+	      int topout = 0;
+	      if (binnedHitChargeVector.size() > 2) {
+		topout = binnedHitChargeVector.size() - 2;
+	      }
+	      else if (binnedHitChargeVector.size() > 1) {
+		topout = binnedHitChargeVector.size() - 1;
+	      }
+	      else {
+		topout = 1;
+	      }
+	      
 
 	      for (double p0=vstart[0]; p0 < highphysbound[0];p0 = p0 + step[0]){
 		for (double p1=vstart[1]; p1 < highphysbound[1];p1 = p1 + step[1]){
@@ -296,6 +312,7 @@ namespace lar_content
 		    double dEdx_2D_tot = 0.0;
 		    double dEdx_2D_raw_av = 0.0;
 		    double dEdx_2D_raw_tot = 0.0;
+		    double bethe_tot = 0.0;
 
 		    int count = 0;
 		    //  double diff_raw_av = 0.0;
@@ -311,6 +328,10 @@ namespace lar_content
 			double dEdx_2D_raw((beta/alpha) * BetheBloch(E_i, Mp));
 			double ChargeOverWidth(hitCharge.GetChargeOverWidth());  //energy per length, experimental
 			//	std::cout << "charge over width f" << ChargeOverWidth << "  dEdx_2D_raw " << dEdx_2D_raw <<std::endl;
+			if (count < topout) {
+			  bethe_tot = bethe_tot + BetheBloch(E_i, Mp);
+			  //  std::cout << "BetheBloch(E_i, Mp) " << BetheBloch(E_i, Mp) <<"  E_i "  << E_i << std::endl;
+			}
 
 			if (dEdx_2D_raw > 0.0) {
 			  dEdx_2D_raw_tot = dEdx_2D_raw_tot + dEdx_2D_raw;
@@ -340,6 +361,7 @@ namespace lar_content
 			dEdx_2D_tot_list.push_back(dEdx_2D_tot);
 			dEdx_2D_raw_tot_list.push_back(dEdx_2D_raw_tot);
 			//  diff_raw_list.push_back(diff_raw_av);
+			bethe_tot_list.push_back(bethe_tot);
 			p0list.push_back(p0);
 			p1list.push_back(p1);
 			p2list.push_back(p2);
@@ -349,6 +371,7 @@ namespace lar_content
 			dEdx_2D_raw_av_list.erase(dEdx_2D_raw_av_list.begin());
 			dEdx_2D_tot_list.erase(dEdx_2D_tot_list.begin());
 			dEdx_2D_raw_tot_list.erase(dEdx_2D_raw_tot_list.begin());
+			bethe_tot_list.erase(bethe_tot_list.begin());
 			p0list.erase(p0list.begin());
 			p1list.erase(p1list.begin());
 			p2list.erase(p2list.begin());
@@ -361,6 +384,7 @@ namespace lar_content
 		      dEdx_2D_raw_av_list.push_back(dEdx_2D_raw_av);
 		      dEdx_2D_tot_list.push_back(dEdx_2D_tot);
 		      dEdx_2D_raw_tot_list.push_back(dEdx_2D_raw_tot);
+		      bethe_tot_list.push_back(bethe_tot);
 		      p0list.push_back(p0);
 		      p1list.push_back(p1);
 		      p2list.push_back(p2);
@@ -386,8 +410,8 @@ namespace lar_content
 		useMass = Me;
 	      }
 
-	      const double step[nParameters] = {1, 100, 1};
-	      const double highphysbound[nParameters] = {5000, useScale, 5};
+	      const double step[nParameters] = {0.01, 10.0, 1.0};
+	      const double highphysbound[nParameters] = {400, useScale, 5};
 
 	      int countb = 0;
 	      for (double p0=vstart[0]; p0 < highphysbound[0];p0 = p0 + step[0]){
@@ -402,6 +426,7 @@ namespace lar_content
 		    double chisquared(0.0);
 		    double dEdx_2D_av = 0.0;
 		    double dEdx_2D_raw_av = 0.0;
+		    double bethe_tot = 0.0;
 		    int count = 0;
 		    front_f_dE = 0.0;
 
@@ -418,6 +443,8 @@ namespace lar_content
 			//	double dEdx_2D_raw((beta/alpha) * BetheBloch(E_i, useMass));
 			double ChargeOverWidth(hitCharge.GetChargeOverWidth());  //energy per length, experimental
 			//	std::cout << "charge over width f " << ChargeOverWidth << " dEdx_2D_raw  " << dEdx_2D_raw <<std::endl;
+
+			bethe_tot = bethe_tot + BetheBloch(E_i, useMass);
 
 			//	if (dEdx_2D_raw > 0.0) {
 			dEdx_2D_raw_av = dEdx_2D_raw_av + ChargeOverWidth;
@@ -447,6 +474,7 @@ namespace lar_content
 			p0list.push_back(p0);
 			p1list.push_back(p1);
 			p2list.push_back(p2);
+			bethe_tot_list.push_back(bethe_tot);
 			countlist.push_back(count);
 			chisquaredlist.pop_front();
 			dEdx_2D_av_list.erase(dEdx_2D_av_list.begin());
@@ -454,6 +482,7 @@ namespace lar_content
 			p0list.erase(p0list.begin());
 			p1list.erase(p1list.begin());
 			p2list.erase(p2list.begin());
+			bethe_tot_list.erase(bethe_tot_list.begin());
 			countlist.erase(countlist.begin());
 		      }
 		    }
@@ -465,6 +494,7 @@ namespace lar_content
 		      p0list.push_back(p0);
 		      p1list.push_back(p1);
 		      p2list.push_back(p2);
+		      bethe_tot_list.push_back(bethe_tot);
 		      countlist.push_back(count);
 		    }
 		  }
@@ -502,7 +532,7 @@ namespace lar_content
 	    
 	    //-------trying to get the dEdx--------------------------------------------------------------------------------------------
 	    // if(isUnContainedTrack == true) {
-	    double forwardsp[5];
+	    double forwardsp[6];
 
 	    forwardsp[0] = dEdx_2D_av_list[indexvalue];
 	    forwardsp[1] = dEdx_2D_raw_av_list[indexvalue];
@@ -524,12 +554,15 @@ namespace lar_content
 	      front_f_dE = front_f_dE/binnedHitChargeVector.size();
 	    }
 	      
+	    forwardsp[6] = bethe_tot_list[indexvalue];
+            bethe_f = forwardsp[6]/forwardscount;
 
 	    dEdx_2D_av_f = forwardsp[0]/forwardscount;
 	    dEdx_2D_raw_av_f = forwardsp[1]/forwardscount;
 
 	    std::cout << "forwardscount = " << forwardscount << std::endl;
 	    std::cout << "dEdx_2D_raw = " << forwardsp[1] << std::endl;
+	    std::cout << "bethe_f = " << bethe_f << std::endl;
 	      
 	    //  }
 
@@ -544,12 +577,13 @@ namespace lar_content
 
 	    const int nParameters2 = 3;
 	    const std::string parName2[nParameters2]   = {"ENDENERGY", "SCALE", "EXTRA"};
-	    const double vstart2[nParameters2] = {2.1, 1.0, 0.0};
+	    const double vstart2[nParameters2] = {2.1, 1.0, 0.5};
 	    std::list<double> chisquaredlist2;
 	    std::vector<double> dEdx_2D_av_list_2;
 	    std::vector<double> dEdx_2D_raw_av_list_2;
 	    std::vector<double> dEdx_2D_tot_list_2;
 	    std::vector<double> dEdx_2D_raw_tot_list_2;
+	    std::vector<double> bethe_tot_list_2;
 	    //  std::vector<double> diff_raw_list_2;
 	    std::vector<double> p0list2;
 	    std::vector<double> p1list2;
@@ -562,11 +596,26 @@ namespace lar_content
 	    // double dEdx_2D_raw_av_b_diff = 0.0;
 	    double dEdx_dE_total_b = 0.0;
 	    double dEdx_dE_total_raw_b = 0.0;
+	    double bethe_b = 0.0;
 	    int backwardscount = 0;
 
 
-	    if (isContainedTrack == true) {                                                              //if a contained track
-	      const double step2[nParameters2] = {1, 100, 1};
+	    if (isContainedTrack == true) {                    //if a contained track
+
+	      
+	      int topout = 0;
+	      if (binnedHitChargeVector.size() > 2) {
+		topout = binnedHitChargeVector.size() - 2;
+	      }
+	      else if (binnedHitChargeVector.size() > 1) {
+		topout = binnedHitChargeVector.size() - 1;
+	      }
+	      else {
+		topout = 1;
+	      }
+	      
+
+	      const double step2[nParameters2] = {0.01, 10.0, 1.0};
 	      const double highphysbound2[nParameters2] = {25, maxScaleP, 5};
 	      for (double p02=vstart2[0];  p02 < highphysbound2[0];p02 = p02 + step2[0]){
 		for (double p12=vstart2[1]; p12 < highphysbound2[1];p12 = p12 + step2[1]){
@@ -583,6 +632,7 @@ namespace lar_content
 		    double dEdx_2D_raw_av_2 = 0.0;
 		    double dEdx_2D_tot_2 = 0.0;
 		    double dEdx_2D_raw_tot_2 = 0.0;
+		    double bethe_tot_2 = 0.0;
 		    int count2 = 0;
 
 		    //minimise this bit-----
@@ -597,6 +647,10 @@ namespace lar_content
 			double ChargeOverWidth(hitCharge.GetChargeOverWidth());  //energy per length, experimental
 			//	std::cout << "charge over width b " << ChargeOverWidth << " dEdx_2D_raw  " << dEdx_2D_raw <<std::endl;
 
+			if(count2 < topout) {
+			  bethe_tot_2 = bethe_tot_2 + BetheBloch(E_i, Mp);
+			}
+			
 			if (dEdx_2D_raw > 0.0) {
 			  dEdx_2D_raw_tot_2 = dEdx_2D_raw_tot_2 + dEdx_2D_raw;
 			}
@@ -624,6 +678,7 @@ namespace lar_content
 			dEdx_2D_raw_av_list_2.push_back(dEdx_2D_raw_av_2);
 			dEdx_2D_tot_list_2.push_back(dEdx_2D_tot_2);
 			dEdx_2D_raw_tot_list_2.push_back(dEdx_2D_raw_tot_2);
+			bethe_tot_list_2.push_back(bethe_tot_2);
 			p0list2.push_back(p02);
 			p1list2.push_back(p12);
 			p2list2.push_back(p22);
@@ -633,6 +688,7 @@ namespace lar_content
 			dEdx_2D_raw_av_list_2.erase(dEdx_2D_raw_av_list_2.begin());
 			dEdx_2D_tot_list_2.erase(dEdx_2D_tot_list_2.begin());
 			dEdx_2D_raw_tot_list_2.erase(dEdx_2D_raw_tot_list_2.begin());
+			bethe_tot_list_2.erase(bethe_tot_list_2.begin());
 			p0list2.erase(p0list2.begin());
 			p1list2.erase(p1list2.begin());
 			p2list2.erase(p2list2.begin());
@@ -645,6 +701,7 @@ namespace lar_content
 		      dEdx_2D_raw_av_list_2.push_back(dEdx_2D_raw_av_2);
 		      dEdx_2D_tot_list_2.push_back(dEdx_2D_tot_2);
 		      dEdx_2D_raw_tot_list_2.push_back(dEdx_2D_raw_tot_2);
+		      bethe_tot_list_2.push_back(bethe_tot_2);
 		      p0list2.push_back(p02);
 		      p1list2.push_back(p12);
 		      p2list2.push_back(p22);
@@ -672,8 +729,8 @@ namespace lar_content
 	      }
 
 
-	      const double  step2[nParameters2] = {1, 100, 1};
-	      const double highphysbound2[nParameters2] = {5000, useScale, 5};
+	      const double  step2[nParameters2] = {0.01, 10.0, 1.0};
+	      const double highphysbound2[nParameters2] = {400, useScale, 5};
 
 	      int countb = 0;
 	      for (double p02=vstart2[0];  p02 < highphysbound2[0];p02 = p02 + step2[0]){
@@ -689,6 +746,7 @@ namespace lar_content
 		    double chisquared2(0.0);
 		    double dEdx_2D_av_2 = 0.0;
 		    double dEdx_2D_raw_av_2 = 0.0;
+		    double bethe_tot_2 = 0.0;
 		    int count2 = 0;
 		    front_b_dE = 0.0;
 		    //minimise this bit-----
@@ -703,6 +761,7 @@ namespace lar_content
 			double ChargeOverWidth(hitCharge.GetChargeOverWidth());  //energy per length, experimental
 			//	std::cout << "charge over width f " << ChargeOverWidth << " dEdx_2D_raw  " << dEdx_2D_raw << std::endl;
 		       
+			bethe_tot_2 = bethe_tot_2 + BetheBloch(E_i, useMass);
 			//	if (dEdx_2D_raw > 0.0) {
 			dEdx_2D_raw_av_2 = dEdx_2D_raw_av_2 + ChargeOverWidth;
 			count2 = count2 + 1;
@@ -730,6 +789,7 @@ namespace lar_content
 			dEdx_2D_av_list_2.push_back(dEdx_2D_av_2);
 			dEdx_2D_raw_av_list_2.push_back(dEdx_2D_raw_av_2);
 			//  diff_raw_list_2.push_back(diff_raw_av_2);
+			bethe_tot_list_2.push_back(bethe_tot_2);
 			p0list2.push_back(p02);
 			p1list2.push_back(p12);
 			p2list2.push_back(p22);
@@ -737,6 +797,7 @@ namespace lar_content
 			chisquaredlist2.pop_front();
 			dEdx_2D_av_list_2.erase(dEdx_2D_av_list_2.begin());
 			dEdx_2D_raw_av_list_2.erase(dEdx_2D_raw_av_list_2.begin());
+			bethe_tot_list_2.erase(bethe_tot_list_2.begin());
 			p0list2.erase(p0list2.begin());
 			p1list2.erase(p1list2.begin());
 			p2list2.erase(p2list2.begin());
@@ -747,6 +808,7 @@ namespace lar_content
 		      chisquaredlist2.push_back(chisquared2);
 		      dEdx_2D_av_list_2.push_back(dEdx_2D_av_2);
 		      dEdx_2D_raw_av_list_2.push_back(dEdx_2D_raw_av_2);
+		      bethe_tot_list_2.push_back(bethe_tot_2);
 		      p0list2.push_back(p02);
 		      p1list2.push_back(p12);
 		      p2list2.push_back(p22);
@@ -788,7 +850,7 @@ namespace lar_content
 
 	    //---------------finding backwards dEdx---------------------------------------------------------------------------------
 	    // if(isUnContainedTrack == true) {
-	    double backwardsp[5];
+	    double backwardsp[6];
 
 	    backwardsp[0] = dEdx_2D_av_list_2[indexvalue2];
 	    backwardsp[1] = dEdx_2D_raw_av_list_2[indexvalue2];
@@ -809,12 +871,16 @@ namespace lar_content
 	      front_b_dE = front_b_dE/binnedHitChargeVector.size();
 	    }
 
+	    backwardsp[6] = bethe_tot_list_2[indexvalue];
+            bethe_b = backwardsp[6]/backwardscount;
+
 	    dEdx_2D_av_b = backwardsp[0]/backwardscount;
 	    dEdx_2D_raw_av_b = backwardsp[1]/backwardscount;
 
 
 	    std::cout << "backwardscount = " << backwardscount  << std::endl;
 	    std::cout << "dEdx_2D_raw = " << backwardsp[1]  << std::endl;
+	    std::cout << "bethe_b = " << bethe_b  << std::endl;
 
 
 	    //-----------get forawrds output details--------------------------------------------------------------------
@@ -934,6 +1000,7 @@ namespace lar_content
 		  double f_L_i = f_Ls + (outpar[1] * hitCharge.GetLongitudinalPosition());         //sum these? Gte the first one only
 		  double f_E_i = GetEnergyfromLength(lookupTableProton, f_L_i);
 		  f_dEdx_2D = outpar[2] * (f_beta/f_alpha) * BetheBloch(f_E_i, Mp);
+		  // std::cout << "BetheBloch(f_E_i, Mp) " << BetheBloch(f_E_i, Mp) << std::endl;
 		  
 
 		  // PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttree", "f_dEdx_2D", f_dEdx_2D ));
@@ -945,6 +1012,7 @@ namespace lar_content
 		  double b_L_i = b_Ls + (outpar2[1] * (trackLength - hitCharge.GetLongitudinalPosition()));
 		  double b_E_i = GetEnergyfromLength(lookupTableProton, b_L_i);
 		  b_dEdx_2D = outpar2[2] * (b_beta/b_alpha) * BetheBloch(b_E_i, Mp);
+		  // std::cout << "BetheBloch(b_E_i, Mp) " << BetheBloch(b_E_i, Mp) << std::endl;
 
 		  // PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttree", "b_dEdx_2D", b_dEdx_2D ));
 		  // PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttree", "i", i));
@@ -1121,6 +1189,7 @@ namespace lar_content
 	    float raw = 0.0;
 	    float front = 0.0;
 	    int countuse = 0;
+	    float bethe = 0.0;
 
 	    //  float diff = 0.0;
 	    
@@ -1150,6 +1219,7 @@ namespace lar_content
 		raw = dEdx_2D_raw_av_b;
 
 		countuse = backwardscount;
+		bethe = bethe_b;
 
 		predenergy = 0.00359282*(std::pow(raw,-1.5)) + 1.04223;
 		if (predenergy < 0.0) {
@@ -1173,6 +1243,7 @@ namespace lar_content
 		raw = dEdx_2D_raw_av_f;
 		//	diff = dEdx_2D_raw_av_f_diff;
 		countuse = forwardscount;
+		bethe = bethe_f;
 
 		predenergy = 0.00359282*(std::pow(raw,-1.5)) + 1.04223;
 		if (predenergy < 0.0) {
@@ -1184,6 +1255,7 @@ namespace lar_content
 	      std::cout << "foundenergy " << foundenergy << std::endl;
 	      std::cout << "average_dEdx " << average_dEdx  << std::endl;
 	      std::cout << "raw dEdx " << raw << std::endl;
+	      std::cout << "bethe " << bethe << std::endl;
 	      std::cout << "   " << std::endl;
 	      std::cout << "predenergy " << predenergy  << std::endl;
 
@@ -1192,6 +1264,7 @@ namespace lar_content
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreeb", "trueenergy", mcenergyp));
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreeb", "Id", id));
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreeb", "IdRecon", pdg));
+	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreeb", "bethe", bethe));
 	      // PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreeb", "tracklength", f_L));
 	      //  PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreeb", "tracklengthoriginal", trackLength));
 	      //PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreeb", "foundenergyoriginal", andyenergy));
@@ -1205,7 +1278,7 @@ namespace lar_content
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreeb", "total_dEdx_raw", total_dEdx_raw));
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreeb", "predenergy", predenergy));
 	      PANDORA_MONITORING_API(FillTree(this->GetPandora(), "ttreeb"));
-	      //  PANDORA_MONITORING_API(ScanTree(this->GetPandora(), "ttreeb"));
+	      // PANDORA_MONITORING_API(ScanTree(this->GetPandora(), "ttreeb"));
 	    }
 
 	    //  if (isUnContainedTrack == true && id==13 && binnedsize > 10){
@@ -1227,6 +1300,7 @@ namespace lar_content
 		std::cout << "dEdx_2D_av_b " << raw << std::endl;
 		//	diff = dEdx_2D_raw_av_b_diff;
 		countuse = backwardscount;
+		bethe = bethe_b;
 		
 		predenergy = 0.000165797*(std::pow(raw,-2.5)) + 0.2;
 		if (predenergy < 0.0) {
@@ -1248,6 +1322,7 @@ namespace lar_content
 		std::cout << "dEdx_2D_av_b " << raw << std::endl;
 		//	diff = dEdx_2D_raw_av_f_diff;
 		countuse = forwardscount;
+		bethe = bethe_f;
 
 		predenergy = 0.000165797*(std::pow(raw,-2.5)) + 0.2;
 		if (predenergy < 0.0) {
@@ -1260,6 +1335,7 @@ namespace lar_content
 	      std::cout << "foundenergy " << foundenergy << std::endl;
 	      std::cout << "average_dEdx " << average_dEdx  << std::endl;
 	      std::cout << "raw dEdx " << raw << std::endl;
+	      std::cout << "bethe " << bethe << std::endl;
 	      std::cout << "   " << std::endl;
 	      std::cout << "predenergy " << predenergy  << std::endl;
 	      
@@ -1268,6 +1344,7 @@ namespace lar_content
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreec", "Id", id));
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreec", "IdRecon", pdg));
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreec", "endenergy", endenergy));
+	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreec", "bethe", bethe));
 	      //PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreec", "average_dEdx_c", t_dEdx_ave ));
 	      //  PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreec", "diff_dEdx", diff ));
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreec", "ori_dEdx", ori ));
@@ -1304,6 +1381,7 @@ namespace lar_content
 
 		front = front_b_dE;
 		countuse = forwardscount;
+		bethe = bethe_b;
 
 		//	predenergy = 50.7615*raw + 0.0368726 - 1.842;
 		predenergy = (raw - 0.0270035)/0.0137571;
@@ -1326,6 +1404,7 @@ namespace lar_content
 
 		front = front_f_dE;
 		countuse = backwardscount;
+		bethe = bethe_f;
 
 		predenergy = (raw - 0.0270035)/0.0137571;
 		if (predenergy < 0.0) {
@@ -1337,6 +1416,7 @@ namespace lar_content
 	      std::cout << "foundenergy " << foundenergy << std::endl;
 	      std::cout << "average_dEdx " << average_dEdx  << std::endl;
 	      std::cout << "raw dEdx " << raw << std::endl;
+	      std::cout << "bethe " << bethe << std::endl;
 	      std::cout << "   " << std::endl;
 	      std::cout << "predenergy " << predenergy  << std::endl;
 
@@ -1345,6 +1425,7 @@ namespace lar_content
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreed", "trueenergy", mcenergyp));
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreed", "Id", id));
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreed", "IdRecon", pdg));
+	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreed", "bethe", bethe));
 	      //   PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreed", "foundenergyoriginal", andyenergy));
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreed", "endenergy", endenergy));
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreed", "ori_dEdx", ori ));
@@ -1357,7 +1438,7 @@ namespace lar_content
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreed", "front", front));
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreed", "predenergy", predenergy));
 	      PANDORA_MONITORING_API(FillTree(this->GetPandora(), "ttreed"));
-	      //  PANDORA_MONITORING_API(ScanTree(this->GetPandora(), "ttreed"));
+	      // PANDORA_MONITORING_API(ScanTree(this->GetPandora(), "ttreed"));
 	    }
 
 	    //  if (isUnContainedTrack == true && id==13 && binnedsize > 10){
@@ -1378,6 +1459,7 @@ namespace lar_content
 
 		front = front_b_dE;
 		countuse = forwardscount;
+		bethe = bethe_b;
 
 		//	predenergy = 104.239*raw + 0.0649419 - 3.064;
 		predenergy = (raw + 0.058042)/0.0780376;
@@ -1397,6 +1479,7 @@ namespace lar_content
 
 		front = front_f_dE;
 		countuse = backwardscount;
+		bethe = bethe_f;
 
 		predenergy = (raw + 0.058042)/0.0780376;
 		if (predenergy < 0.0) {
@@ -1408,6 +1491,7 @@ namespace lar_content
 	      std::cout << "foundenergy " << foundenergy << std::endl;
 	      std::cout << "average_dEdx " << average_dEdx  << std::endl;
 	      std::cout << "raw dEdx " << raw << std::endl;
+	      std::cout << "bethe " << bethe << std::endl;
 	      std::cout << "   " << std::endl;
 	      std::cout << "predenergy " << predenergy  << std::endl;
 	      
@@ -1415,6 +1499,7 @@ namespace lar_content
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreee", "trueenergy", mcenergyp));
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreee", "Id", id));
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreee", "IdRecon", pdg));
+	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreee", "bethe", bethe));
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreee", "endenergy", endenergy));
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreee", "ori_dEdx", ori ));
 	      PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), "ttreee", "raw_dEdx", raw ));
@@ -1812,10 +1897,10 @@ namespace lar_content
 
 
     double p(std::sqrt((T*T) + 2*T*M));
-    double gamma(std::sqrt(1 + ((p/M) * (p/M))));
-    double beta(std::sqrt(1 - 1 / (gamma*gamma)));
+    double gamma(std::sqrt(1 + ((p/M) * (p/M))));   //changes only with p
+    double beta(std::sqrt(1 - 1 / (gamma*gamma)));  //changes only with p
 
-    double T_max(2 * m_e * (beta*gamma*beta*gamma) / (1 + 2 * gamma * m_e / M + ((m_e/M) * (m_e/M))));
+    double T_max(2 * m_e * (beta*gamma*beta*gamma) / (1 + 2 * gamma * m_e / M + ((m_e/M) * (m_e/M))));  //changes only with p if same M
 
     return rho * ((K * z * z * Z) / A) * (0.5*std::log(2 * m_e * T_max * (beta*gamma*beta*gamma) / (I*I) ) - (beta*beta) - (0.5*DensityCorrection(p, M))) / (beta*beta); //in MeV/cm
 
@@ -1831,11 +1916,11 @@ namespace lar_content
     double currentEnergy(lookupTable.GetInitialEnergy()), binWidth(lookupTable.GetBinWidth());
     int maxBin(0);
 
-    std::cout << "binwidth FLT " << binWidth << std::endl;
+    //std::cout << "binwidth FLT " << binWidth << std::endl;
     
 
-    for (double n = 0; n < 100000; ++n)  //lost a 0
-// for (double n = 0; n < 10000; ++n)
+    for (double n = 0; n < 500001; ++n)  //lost a 0
+// for (double n = 0; n < 100000; ++n)
       {
         double currentdEdx = BetheBloch(currentEnergy, M);
 
@@ -1858,8 +1943,8 @@ namespace lar_content
             lookupMap.insert(std::pair<int, double>(n, currentEnergy));
             reverseLookupMap.insert(std::pair<double, int>(currentEnergy, n));
 	  }
-	///std::cout << "current energy: " << currentEnergy << std::endl;
-	//std::cout << "n: " << n << std::endl;
+	//	std::cout << "current energy: " << currentEnergy << std::endl;
+	//	std::cout << "n: " << n << std::endl;
 	//	std::cout << "currentdEdx: " << currentdEdx << std::endl;
 	
         currentEnergy -= (currentdEdx * binWidth);
