@@ -78,8 +78,8 @@ StatusCode TrackDirectionTool::Initialize()
     
       try
         {
-	  std::cout << "    " << std::endl;
-    	   std::cout << "At start of finding directions...                                                                                                                                                                                                                                                                                        " << std::endl;
+	   std::cout << "    " << std::endl;
+    	  // std::cout << "At start of finding directions...                                                                                                                                                                                                                                                                                        " << std::endl;
 	   
 	   TrackDirectionTool::DirectionFitObject fitResult = this->GetPfoDirection(pPfo);
 	   //  incomplete = false;
@@ -96,15 +96,15 @@ StatusCode TrackDirectionTool::Initialize()
 	   std::cout << "Endpoint position: (" << fitResult.GetEndpoint().GetX() << ", " << fitResult.GetEndpoint().GetY() << ", " << fitResult.GetEndpoint().GetZ() << ")" << std::endl;
 	   std::cout << "Hypothosis: " << fitResult.GetHypothesis() << std::endl;
 
-
+	   /*
 	   float ymax = 0.0;
 	   if(fitResult.GetBeginpoint().GetY() > fitResult.GetEndpoint().GetY()) {
 	     ymax = fitResult.GetBeginpoint().GetY();
 	   } else if (fitResult.GetBeginpoint().GetY() < fitResult.GetEndpoint().GetY()) {
 	     ymax = fitResult.GetEndpoint().GetY();
 	   }
-	   
-	   std::cout << "ymax " << ymax << std::endl;
+	   */
+	   // std::cout << "ymax " << ymax << std::endl;
 
 	   if (fitResult.GetProbability() < 0.96) {
 	     directioncosmic = false;
@@ -242,9 +242,9 @@ TrackDirectionTool::DirectionFitObject TrackDirectionTool::GetPfoDirection(const
 
 
 
-      std::cout << "min = " <<  m_minClusterCaloHits << std::endl;
-      std::cout << "here = " << pClusterW->GetNCaloHits()  << std::endl;
-      std::cout << "total = " << totalcalohits.size() << std::endl;
+      // std::cout << "min = " <<  m_minClusterCaloHits << std::endl;
+      // std::cout << "here = " << pClusterW->GetNCaloHits()  << std::endl;
+      // std::cout << "total = " << totalcalohits.size() << std::endl;
         if (pClusterW->GetNCaloHits() <= m_minClusterCaloHits)
         {
             std::cout << "ERROR: PFO is tiny!" << std::endl;
@@ -522,7 +522,7 @@ void TrackDirectionTool::FragmentRemoval(HitChargeVector &hitChargeVector, HitCh
 
 void TrackDirectionTool::SimpleTrackEndFilter(HitChargeVector &hitChargeVector)
 {
-  std::cout << "simple track end filter" << std::endl;
+  // std::cout << "simple track end filter" << std::endl;
     float lowerBound(0.9), upperBound(2.2);
 
     while ((*(hitChargeVector.begin())).GetChargeOverWidth()/(*(std::next(hitChargeVector.begin(), 1))).GetChargeOverWidth() <= lowerBound || (*(hitChargeVector.begin())).GetChargeOverWidth()/(*(std::next(hitChargeVector.begin(), 1))).GetChargeOverWidth() >= upperBound)
@@ -1455,20 +1455,20 @@ void TrackDirectionTool::ComputeProbability(DirectionFitObject &fitResult)
     } 
     float pmax = 0.90706 + (0.00011538*fitResult.GetNHits()) - (0.032143*fitResult.GetMinChiSquaredPerHit());   //need refining, alex
     float x = std::abs(deltaChiSquaredPerHit);
-    std::cout << "deltaChiSquaredPerHit  " << deltaChiSquaredPerHit << std::endl;
+    // std::cout << "deltaChiSquaredPerHit  " << deltaChiSquaredPerHit << std::endl;
     float paa = (1.0/(2.0*alpha));
     float pab = ((2.0*alpha*pmax)+(2.0*beta*pmax) - alpha - beta);
-    std::cout << "(pow(((alpha + beta)/beta), beta/alpha)) " << (pow(((alpha + beta)/beta), beta/alpha)) << std::endl;
+    // std::cout << "(pow(((alpha + beta)/beta), beta/alpha)) " << (pow(((alpha + beta)/beta), beta/alpha)) << std::endl;
     float pac = (pow(((alpha + beta)/beta), beta/alpha));
     float p0 = 0.5 + paa*((pab)*(pac));
     float pc = 0.5 + (p0 - 0.5)*(1.0 - exp(-alpha*x))*(exp(-beta*x));
 
-    std::cout << "fitResult.GetNHits() " << fitResult.GetNHits() << std::endl;
-    std::cout << "fitResult.GetMinChiSquaredPerHit() " << fitResult.GetMinChiSquaredPerHit() << std::endl;
-    std::cout << "alpha = " << alpha << std::endl;
-    std::cout << "pmax = " << pmax << std::endl;
-    std::cout << "p0 = " << p0 << std::endl;
-    std::cout << "pc = " << pc << std::endl;
+    // std::cout << "fitResult.GetNHits() " << fitResult.GetNHits() << std::endl;
+    // std::cout << "fitResult.GetMinChiSquaredPerHit() " << fitResult.GetMinChiSquaredPerHit() << std::endl;
+    // std::cout << "alpha = " << alpha << std::endl;
+    // std::cout << "pmax = " << pmax << std::endl;
+    // std::cout << "p0 = " << p0 << std::endl;
+    // std::cout << "pc = " << pc << std::endl;
     fitResult.SetProbability(pc);
   
 
@@ -1621,8 +1621,10 @@ void TrackDirectionTool::ComputeProbability(DirectionFitObject &fitResult)
 
 void TrackDirectionTool::PerformFits(HitChargeVector &hitChargeVector, HitChargeVector &forwardsFitPoints, HitChargeVector &backwardsFitPoints, int numberHitsToConsider, float &forwardsChiSquared, float &backwardsChiSquared, int &fitStatus1, int &fitStatus2)
 {
-  std::cout << "start: PerformFits" << std::endl;
-  std::cout << "fit status: " << fitStatus1 << "  :  " << fitStatus2 << std::endl;
+  //std::cout << "start: PerformFits" << std::endl;
+  if (1==2) {
+    std::cout << "fit status: " << fitStatus1 << "  :  " << fitStatus2 << std::endl;
+  }
 
   lar_content::TrackDirectionTool::LookupTable globalMuonLookupTable;
   if (globalMuonLookupTable.GetMap().empty()){
@@ -1659,9 +1661,9 @@ void TrackDirectionTool::PerformFits(HitChargeVector &hitChargeVector, HitCharge
        maxScale = 1.1;
      }
    }
-   std::cout <<globalMuonLookupTable.GetMaxRange() << std::endl;
-   std::cout << trackLength<< std::endl;
-   std::cout << "maxScale " << maxScale << std::endl;
+   // std::cout <<globalMuonLookupTable.GetMaxRange() << std::endl;
+   //std::cout << trackLength<< std::endl;
+   //std::cout << "maxScale " << maxScale << std::endl;
    LookupTable lookupTable = globalMuonLookupTable;
 
    const int nParameters = 3;
@@ -1681,7 +1683,7 @@ void TrackDirectionTool::PerformFits(HitChargeVector &hitChargeVector, HitCharge
     //minimise starts here
     //while (lastchisquared >= chisquared) {
 
-    auto t_start = std::chrono::high_resolution_clock::now();
+    // auto t_start = std::chrono::high_resolution_clock::now();
     
     for (double p0=vstart[0]; p0 < highphysbound[0];p0 = p0 + step[0]){
       for (double p1=vstart[1]; p1 < highphysbound[1];p1 = p1 + step[1]){
@@ -1737,8 +1739,8 @@ void TrackDirectionTool::PerformFits(HitChargeVector &hitChargeVector, HitCharge
       }
     }
 
-    auto t_end = std::chrono::high_resolution_clock::now();
-    std::cout << "time: " << std::chrono::duration<double, std::milli>(t_end-t_start).count() << std::endl;
+    // auto t_end = std::chrono::high_resolution_clock::now();
+    // std::cout << "time: " << std::chrono::duration<double, std::milli>(t_end-t_start).count() << std::endl;
 
     //std::list<double>::iterator minchisquared = std::min_element(chisquaredlist.begin(), chisquaredlist.end());
     // auto index = std::distance(chisquaredlist.begin(), minchisquared);   
@@ -1972,7 +1974,7 @@ void TrackDirectionTool::TestHypothesisOne(DirectionFitObject &directionFitObjec
   /*  std::cout << " directionFitObject.GetDirectionEstimate()  " << directionFitObject.GetDirectionEstimate() << "     directionFitObject.GetHitChargeVector().size()     " << directionFitObject.GetHitChargeVector().size() << "      directionFitObject.GetForwardsChiSquared()/directionFitObject.GetNHits()    " <<  directionFitObject.GetForwardsChiSquared()/directionFitObject.GetNHits() << std::endl;
    */
 
-  std::cout << "directionFitObject.GetMinChiSquaredPerHit() " << directionFitObject.GetMinChiSquaredPerHit() << "  GetForwardsChiSquaredPerHit()"  << directionFitObject.GetForwardsChiSquaredPerHit() << "  GetBackwardsChiSquaredPerHit()   " <<   directionFitObject.GetBackwardsChiSquaredPerHit() << "         directionFitObject.GetNHits()  " << directionFitObject.GetNHits() << std::endl;
+  //  std::cout << "directionFitObject.GetMinChiSquaredPerHit() " << directionFitObject.GetMinChiSquaredPerHit() << "  GetForwardsChiSquaredPerHit()"  << directionFitObject.GetForwardsChiSquaredPerHit() << "  GetBackwardsChiSquaredPerHit()   " <<   directionFitObject.GetBackwardsChiSquaredPerHit() << "         directionFitObject.GetNHits()  " << directionFitObject.GetNHits() << std::endl;
 
   if (likelyForwards || likelyBackwards)
     {

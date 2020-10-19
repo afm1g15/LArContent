@@ -604,13 +604,13 @@ StatusCode MasterAlgorithm::StitchCosmicRayPfos(PfoToLArTPCMap &pfoToLArTPCMap, 
       for (const auto &pMCParticle : mcParticleVector)
 	{
 	  const auto &caloHitList2 = mcMCParticlesToGoodHitsMap.at(pMCParticle);
-	  std::cout << "  " << std::endl;
-	  std::cout << "Primary MCParticle " << pMCParticle << std::endl;
-	  std::cout << "  - PDG : " << pMCParticle->GetParticleId() << std::endl;
-	  std::cout << "  - NHits : " << caloHitList2.size() << std::endl; 
+	  // std::cout << "  " << std::endl;
+	  // std::cout << "Primary MCParticle " << pMCParticle << std::endl;
+	  // std::cout << "  - PDG : " << pMCParticle->GetParticleId() << std::endl;
+	  // std::cout << "  - NHits : " << caloHitList2.size() << std::endl; 
 	  Size = caloHitList2.size();
 	  mchitslist.push_back(std::make_pair(pMCParticle, Size));
-	  std::cout << "  " << std::endl;
+	  // std::cout << "  " << std::endl;
       
 	}
 
@@ -622,10 +622,10 @@ StatusCode MasterAlgorithm::StitchCosmicRayPfos(PfoToLArTPCMap &pfoToLArTPCMap, 
 	  mcpairslist.clear();
 	
 	  const auto &caloHitList3 = PfosToGoodHitsMap.at(ppfo);
-	  std::cout << "Pfo " << ppfo << std::endl;
-	  std::cout << "  - PDG : " << ppfo->GetParticleId() << std::endl;
-	  std::cout << "  - NHits shared total: " << caloHitList3.size() << std::endl;
-	  std::cout << "  - is final state?: " << LArPfoHelper::IsFinalState(ppfo)  << std::endl;
+	  // std::cout << "Pfo " << ppfo << std::endl;
+	  // std::cout << "  - PDG : " << ppfo->GetParticleId() << std::endl;
+	  // std::cout << "  - NHits shared total: " << caloHitList3.size() << std::endl;
+	  //  std::cout << "  - is final state?: " << LArPfoHelper::IsFinalState(ppfo)  << std::endl;
 	
 	  const auto iter = PfotoMCParticleMap.find(ppfo);
 	  if (iter == PfotoMCParticleMap.end()) {
@@ -662,8 +662,9 @@ StatusCode MasterAlgorithm::StitchCosmicRayPfos(PfoToLArTPCMap &pfoToLArTPCMap, 
 		LArPfoHelper::GetCaloHits(pPPfo, TPC_VIEW_W, caloHitListW);
       
 	        float hitsinpfo = caloHitList.size();
-
+		/*
 		ClusterList clusterList = ppfo->GetClusterList();
+		
 		const Cluster* pCluster = clusterList.back();
 		int w = 0;
 		for (auto c :clusterList) {
@@ -672,7 +673,8 @@ StatusCode MasterAlgorithm::StitchCosmicRayPfos(PfoToLArTPCMap &pfoToLArTPCMap, 
 		  }
 		  w++;
 		}
-		float length = LArClusterHelper::GetLength(pCluster);
+		*/
+		//	float length = LArClusterHelper::GetLength(pCluster);
 
 		if (caloHitListU.size() >= 5) {
 		  viewsizelist.push_back(caloHitListU.size());
@@ -688,12 +690,12 @@ StatusCode MasterAlgorithm::StitchCosmicRayPfos(PfoToLArTPCMap &pfoToLArTPCMap, 
 
 		float PurityTot = 0;
 		float SigTot = 0;
-		bool isDownward = 1; //default as 1, will need to change to 0 (i.e. definetly a neutrino)
+		//	bool isDownward = 1; //default as 1, will need to change to 0 (i.e. definetly a neutrino)
 		if (hitsinpfo >= 15) {
 		  if (viewsizelist.size() >= 2) {
-		  std::cout << "hits in pfo = " << hitsinpfo << std::endl;
-		  std::cout << "hits in pfo W = " << caloHitListW.size() << std::endl;
-		  std::cout << "length in W = " << length << std::endl;
+		    //  std::cout << "hits in pfo = " << hitsinpfo << std::endl;
+		    //  std::cout << "hits in pfo W = " << caloHitListW.size() << std::endl;
+		    //	  std::cout << "length in W = " << length << std::endl;
 		  for(it=mchitslist.begin(); it!=mchitslist.end(); ++it) {
 		    if (caloHitList3.size() != 0) {
 		      std::pair<const pandora::MCParticle *, int> mchitsvalue = *it;
@@ -705,8 +707,8 @@ StatusCode MasterAlgorithm::StitchCosmicRayPfos(PfoToLArTPCMap &pfoToLArTPCMap, 
 			    float sigtemp = (float)mcpairvalue.second/(float)mchitsvalue.second;
 			    PurityTot = puritytemp;
 			    SigTot = SigTot + sigtemp;
-			    std::cout << "Purity temp = " << (float)caloHitList3.size() << "  over  " <<(float)hitsinpfo <<  std::endl;
-			    std::cout << "Sig temp = " << (float)mcpairvalue.second << "  over  " <<(float)mchitsvalue.second <<  std::endl;
+			    // std::cout << "Purity temp = " << (float)caloHitList3.size() << "  over  " <<(float)hitsinpfo <<  std::endl;
+			    //  std::cout << "Sig temp = " << (float)mcpairvalue.second << "  over  " <<(float)mchitsvalue.second <<  std::endl;
 			    //----------------------------------------------------------------------------
 			    // isDownward = mchitsvalue.first->GetMomentum().GetUnitVector().GetDotProduct(CartesianVector(0.f, 1.f, 0.f)) < 0;
 			    //std::cout << "is down? " << isDownward << std::endl;
@@ -725,8 +727,8 @@ StatusCode MasterAlgorithm::StitchCosmicRayPfos(PfoToLArTPCMap &pfoToLArTPCMap, 
 				float sigtemp = (float)hitsvectorb[i].second.size()/(float)mchitsvalue.second;
 				PurityTot = puritytemp;
 				SigTot = SigTot + sigtemp;
-				std::cout << "Purity temp = " << (float)caloHitList3.size() << "  over  " <<(float)hitsinpfo <<  std::endl;
-				std::cout << "Sig temp = " << (float)hitsvectorb[i].second.size() << "  over  " <<(float)mchitsvalue.second <<  std::endl;
+				//	std::cout << "Purity temp = " << (float)caloHitList3.size() << "  over  " <<(float)hitsinpfo <<  std::endl;
+				//	std::cout << "Sig temp = " << (float)hitsvectorb[i].second.size() << "  over  " <<(float)mchitsvalue.second <<  std::endl;
 				//  isDownward = mchitsvalue.first->GetMomentum().GetUnitVector().GetDotProduct(CartesianVector(0.f, 1.f, 0.f)) < 0;
 				//std::cout << "is down? " << isDownward << std::endl;
 			      }
@@ -738,17 +740,17 @@ StatusCode MasterAlgorithm::StitchCosmicRayPfos(PfoToLArTPCMap &pfoToLArTPCMap, 
 		    }
 		  }
 	    
-		  std::cout << "Purity = " << PurityTot << std::endl;
-		  std::cout << "Sig = " << SigTot << std::endl;
-		  std::cout << "is down? " << isDownward << std::endl;
+		  // std::cout << "Purity = " << PurityTot << std::endl;
+		  //  std::cout << "Sig = " << SigTot << std::endl;
+		  //  std::cout << "is down? " << isDownward << std::endl;
 
 		  if (PurityTot < 0.05 && SigTot < 0.1){
-		    std::cout << "Clear Cosmic" << std::endl;
+		    //std::cout << "Clear Cosmic" << std::endl;
 		    clearcosmiccount = clearcosmiccount + 1;
 
-		    std::cout << "hits in pfo = " << hitsinpfo << std::endl;
-		    std::cout << "hits in pfo W = " << caloHitListW.size() << std::endl;
-		    std::cout << "length in W = " << length << std::endl;
+		    // std::cout << "hits in pfo = " << hitsinpfo << std::endl;
+		    // std::cout << "hits in pfo W = " << caloHitListW.size() << std::endl;
+		    // std::cout << "length in W = " << length << std::endl;
 		    /*
 		    float WL = caloHitListW.size();
 		    
@@ -796,16 +798,16 @@ StatusCode MasterAlgorithm::StitchCosmicRayPfos(PfoToLArTPCMap &pfoToLArTPCMap, 
 
 
 		    if (isClearCosmic2 == 1) {
-		      std::cout << "Tagged as a CR" << std::endl;
+		      //  std::cout << "Tagged as a CR" << std::endl;
 		      correctcr = correctcr + 1;
 		    }
 		    if (isClearCosmic2 == 0) {
-		      std::cout << "potential neutrino" << std::endl;
+		      // std::cout << "potential neutrino" << std::endl;
 		      incorrectcr = incorrectcr + 1;
 		    }
 		  }
 		  else if (PurityTot > 0.95 && SigTot > 0.1) {
-		    std::cout << "Clear Neutrino" << std::endl;
+		    // std::cout << "Clear Neutrino" << std::endl;
 
 		    /*
 		    //-------------------------------------------
@@ -841,9 +843,9 @@ StatusCode MasterAlgorithm::StitchCosmicRayPfos(PfoToLArTPCMap &pfoToLArTPCMap, 
 
 		    */
 		    
-		    std::cout << "hits in pfo = " << hitsinpfo << std::endl;
-		    std::cout << "hits in pfo W = " << caloHitListW.size() << std::endl;
-		    std::cout << "length in W = " << length << std::endl;
+		    //  std::cout << "hits in pfo = " << hitsinpfo << std::endl;
+		    // std::cout << "hits in pfo W = " << caloHitListW.size() << std::endl;
+		    // std::cout << "length in W = " << length << std::endl;
 		    /*
 		    float WL = caloHitListW.size();
 		    
@@ -901,18 +903,18 @@ StatusCode MasterAlgorithm::StitchCosmicRayPfos(PfoToLArTPCMap &pfoToLArTPCMap, 
 
 		    clearneutrinocount = clearneutrinocount + 1;
 		    if (isClearCosmic2 == 1) {
-		      std::cout << "Tagged as a CR" << std::endl;
+		      //  std::cout << "Tagged as a CR" << std::endl;
 		      incorrectneutrino = incorrectneutrino + 1;
 		    }
 		    if (isClearCosmic2 == 0) {
-		      std::cout << "potential neutrino" << std::endl;
+		      //  std::cout << "potential neutrino" << std::endl;
 		      correctneutrino = correctneutrino + 1;
 		    }
 		  }
 		  else{
-		    std::cout << "Unclear" << std::endl;
+		    //  std::cout << "Unclear" << std::endl;
 		  }
-		  std::cout << "                                  " << std::endl;
+		  //std::cout << "                                  " << std::endl;
 	      
 		  }
 		}
@@ -1401,7 +1403,6 @@ StatusCode MasterAlgorithm::RunSlicing(const VolumeIdToHitListMap &volumeIdToHit
 
 StatusCode MasterAlgorithm::RunSliceReconstruction(SliceVector &sliceVector, SliceHypotheses &nuSliceHypotheses, SliceHypotheses &crSliceHypotheses) const
 {
-  std::cout << "start slice recon" << std::endl;
     unsigned int sliceCounter(0);
 
     for (const CaloHitList &sliceHits : sliceVector)
@@ -1423,7 +1424,6 @@ StatusCode MasterAlgorithm::RunSliceReconstruction(SliceVector &sliceVector, Sli
             if (m_printOverallRecoStatus)
                 std::cout << "Running nu worker instance for slice " << (sliceCounter + 1) << " of " << sliceVector.size() << std::endl;
 	    
-	    std::cout << "Running nu worker instance for slice " << (sliceCounter + 1) << " of " << sliceVector.size() << std::endl;
 
             const PfoList *pSliceNuPfos(nullptr);
             PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraApi::ProcessEvent(*m_pSliceNuWorkerInstance));
@@ -1443,7 +1443,6 @@ StatusCode MasterAlgorithm::RunSliceReconstruction(SliceVector &sliceVector, Sli
             if (m_printOverallRecoStatus)
                 std::cout << "Running cr worker instance for slice " << (sliceCounter + 1) << " of " << sliceVector.size() << std::endl;
 
-	    std::cout << "Running cr worker instance for slice " << (sliceCounter + 1) << " of " << sliceVector.size() << std::endl;
 
             const PfoList *pSliceCRPfos(nullptr);
             PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraApi::ProcessEvent(*m_pSliceCRWorkerInstance));
@@ -1464,7 +1463,6 @@ StatusCode MasterAlgorithm::RunSliceReconstruction(SliceVector &sliceVector, Sli
     if (m_shouldRunNeutrinoRecoOption && m_shouldRunCosmicRecoOption && (nuSliceHypotheses.size() != crSliceHypotheses.size()))
         throw StatusCodeException(STATUS_CODE_INVALID_PARAMETER);
 
-    std::cout << "end slice recon" << std::endl;
     return STATUS_CODE_SUCCESS;
 }
 
@@ -1491,7 +1489,7 @@ StatusCode MasterAlgorithm::RunSliceReconstruction(SliceVector &sliceVector, Sli
 	 {
 	   PfoList daughterPfos = pNeutrinoPfo->GetDaughterPfoList();
 	   for (const ParticleFlowObject *const pDaughterPfo : daughterPfos) {
-	     std::cout << " daughters " << pDaughterPfo  << std::endl;
+	     //std::cout << " daughters " << pDaughterPfo  << std::endl;
 	     selectedSlicePfosB.push_back(pDaughterPfo);
 	   }
 
@@ -1507,32 +1505,32 @@ StatusCode MasterAlgorithm::RunSliceReconstruction(SliceVector &sliceVector, Sli
 
        for (const Pfo *const pcosmicPfo : cosmicPfoList)
         {
-	  std::cout << "crnut " << pcosmicPfo << std::endl;
+	  //std::cout << "crnut " << pcosmicPfo << std::endl;
 	  selectedSlicePfosB.push_back(pcosmicPfo);
 
 	}
 
     }
 
-    std::cout << " size   :   " <<  selectedSlicePfosB.size() << std::endl; 
+    //std::cout << " size   :   " <<  selectedSlicePfosB.size() << std::endl; 
 
     std::unordered_map<const Pfo*, float> pfotoprobabilitymap;
     PfoToFloatMap pfotoprobabilitymapb;
-    std::cout << "------------------Running over Slices---------------------" << std::endl;
+    //std::cout << "------------------Running over Slices---------------------" << std::endl;
     for (const Pfo *const pPPPfo :  selectedSlicePfosB) {
       float downprobability = -1;
       for (TrackDirectionBaseTool *const pTrackDirectionTool : m_trackDirectionToolVector){
 	try{
 	  pTrackDirectionTool->FindDirections(pPPPfo, directioncosmic, downprobability, this);  //probability
 	  pfotoprobabilitymapb.insert({pPPPfo,downprobability});
-	  std::cout << " ^^ Pfo = " << pPPPfo << std::endl;
+	  // std::cout << " ^^ Pfo = " << pPPPfo << std::endl;
 	}
 	catch(...){
 	  std::cout << "Runtime error in TrackDirectionTool!" << std::endl;
 	}
       }
     }
-    std::cout << "------------------Done Running over Slices---------------------" << std::endl;
+    //  std::cout << "------------------Done Running over Slices---------------------" << std::endl;
     
     
     //probability from list
@@ -1542,14 +1540,14 @@ StatusCode MasterAlgorithm::RunSliceReconstruction(SliceVector &sliceVector, Sli
 
     if (m_shouldPerformSliceId)
     {
-      std::cout << "option 1 run SelectoutputPfos" << std::endl;
+      // std::cout << "option 1 run SelectoutputPfos" << std::endl;
         for (SliceIdBaseTool *const pSliceIdTool : m_sliceIdToolVector)
 	  pSliceIdTool->SelectOutputPfos(this, nuSliceHypotheses, crSliceHypotheses, selectedSlicePfos, pfotoprobabilitymapb, sliceVector);
 
     }
     else if (m_shouldRunNeutrinoRecoOption != m_shouldRunCosmicRecoOption)
     {
-      std::cout << "option 2 run call em crs" << std::endl;
+      // std::cout << "option 2 run call em crs" << std::endl;
         const SliceHypotheses &sliceHypotheses(m_shouldRunNeutrinoRecoOption ? nuSliceHypotheses : crSliceHypotheses);
 
         for (const PfoList &slice : sliceHypotheses)
