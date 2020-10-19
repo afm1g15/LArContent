@@ -42,13 +42,13 @@ namespace lar_content
     for (const ParticleFlowObject *const pPfo : *pPfoList)
       {
 	CaloHitList totalcalohits2;
-    	std::cout << "PMA: pPfo " << pPfo << "   "  << pPfo->GetParticleId()  << std::endl;
+	//	std::cout << "PMA: pPfo " << pPfo << "   "  << pPfo->GetParticleId()  << std::endl;
 	LArPfoHelper::GetCaloHits(pPfo, TPC_VIEW_U, totalcalohits2);
 	LArPfoHelper::GetCaloHits(pPfo, TPC_VIEW_V, totalcalohits2);
 	LArPfoHelper::GetCaloHits(pPfo, TPC_VIEW_W, totalcalohits2);
 	std::cout << totalcalohits2.size() << std::endl;
 	if( pPfo->GetParticleId()  ==14 ) {
-	  std::cout << "NEUTRINO!" << std::endl;
+	  // std::cout << "NEUTRINO!" << std::endl;
 	}
       }
 
@@ -115,13 +115,13 @@ namespace lar_content
     for (const auto &pMCParticle : mcParticleVector)
       {
 	const auto &caloHitList2 = mcMCParticlesToGoodHitsMap.at(pMCParticle);
-	std::cout << "  " << std::endl;
-	std::cout << "Primary MCParticle " << pMCParticle << std::endl;
-	std::cout << "  - PDG : " << pMCParticle->GetParticleId() << std::endl;
-	std::cout << "  - NHits : " << caloHitList2.size() << std::endl; 
+	//	//	std::cout << "  " << std::endl;
+	//	std::cout << "Primary MCParticle " << pMCParticle << std::endl;
+	//	std::cout << "  - PDG : " << pMCParticle->GetParticleId() << std::endl;
+	//std::cout << "  - NHits : " << caloHitList2.size() << std::endl; 
 	Size = caloHitList2.size();
 	mchitslist.push_back(std::make_pair(pMCParticle, Size));
-	std::cout << "  " << std::endl;
+	//	std::cout << "  " << std::endl;
       
       }
 
@@ -133,9 +133,9 @@ namespace lar_content
 	mcpairslist.clear();
 	
 	const auto &caloHitList3 = PfosToGoodHitsMap.at(ppfo);
-	std::cout << "Pfo " << ppfo << std::endl;
-	std::cout << "  - PDG : " << ppfo->GetParticleId() << std::endl;
-	std::cout << "  - NHits shared total: " << caloHitList3.size() << std::endl;  //this rewrites every time
+	//	std::cout << "Pfo " << ppfo << std::endl;
+	//	std::cout << "  - PDG : " << ppfo->GetParticleId() << std::endl;
+	//	std::cout << "  - NHits shared total: " << caloHitList3.size() << std::endl;  //this rewrites every time
 	
 	const auto iter = PfotoMCParticleMap.find(ppfo);
 	if (iter == PfotoMCParticleMap.end()) {
@@ -161,7 +161,7 @@ namespace lar_content
 	    unsigned int hitsinpfo = caloHitList.size();
 	    float PurityTot = 0;
 	    float SigTot = 0;
-	    bool isDownward = 1; //default as 1, will need to change to 0 (i.e. definetly a cosmic) //THINK HERE
+	    //bool isDownward = 1; //default as 1, will need to change to 0 (i.e. definetly a cosmic) //THINK HERE
 	    //  if (hitsinpfo => 15) {
 	      std::cout << "hits in pfo = " << hitsinpfo << std::endl;
 	      for(it=mchitslist.begin(); it!=mchitslist.end(); ++it) {
@@ -175,10 +175,10 @@ namespace lar_content
 			float sigtemp = (float)mcpairvalue.second/(float)mchitsvalue.second;
 			PurityTot = puritytemp;
 			SigTot = SigTot + sigtemp;
-			std::cout << "Purity temp = " << (float)caloHitList3.size() << "  over  " <<(float)hitsinpfo <<  std::endl;
-			std::cout << "Sig temp = " << (float)mcpairvalue.second << "  over  " <<(float)mchitsvalue.second <<  std::endl;
+			//	std::cout << "Purity temp = " << (float)caloHitList3.size() << "  over  " <<(float)hitsinpfo <<  std::endl;
+			//	std::cout << "Sig temp = " << (float)mcpairvalue.second << "  over  " <<(float)mchitsvalue.second <<  std::endl;
 			//----------------------------------------------------------------------------
-			isDownward = mchitsvalue.first->GetMomentum().GetUnitVector().GetDotProduct(CartesianVector(0.f, 1.f, 0.f)) < 0;
+			//	isDownward = mchitsvalue.first->GetMomentum().GetUnitVector().GetDotProduct(CartesianVector(0.f, 1.f, 0.f)) < 0;
     
 		      }
 		    }
@@ -195,9 +195,9 @@ namespace lar_content
 			    float sigtemp = (float)hitsvectorb[i].second.size()/(float)mchitsvalue.second;
 			    PurityTot = puritytemp;
 			    SigTot = SigTot + sigtemp;
-			    std::cout << "Purity temp = " << (float)caloHitList3.size() << "  over  " <<(float)hitsinpfo <<  std::endl;
-			    std::cout << "Sig temp = " << (float)hitsvectorb[i].second.size() << "  over  " <<(float)mchitsvalue.second <<  std::endl;
-			    isDownward = mchitsvalue.first->GetMomentum().GetUnitVector().GetDotProduct(CartesianVector(0.f, 1.f, 0.f)) < 0;
+			    // std::cout << "Purity temp = " << (float)caloHitList3.size() << "  over  " <<(float)hitsinpfo <<  std::endl;
+			    // std::cout << "Sig temp = " << (float)hitsvectorb[i].second.size() << "  over  " <<(float)mchitsvalue.second <<  std::endl;
+			    //  isDownward = mchitsvalue.first->GetMomentum().GetUnitVector().GetDotProduct(CartesianVector(0.f, 1.f, 0.f)) < 0;
 			  }
 			}
 
@@ -207,52 +207,52 @@ namespace lar_content
 		}
 	      }
 	    
-	      std::cout << "Purity = " << PurityTot << std::endl;
-	      std::cout << "Sig = " << SigTot << std::endl;
-	      std::cout << "is down? " << isDownward << std::endl;
+	      // // std::cout << "Purity = " << PurityTot << std::endl;
+		// std::cout << "Sig = " << SigTot << std::endl;
+	      // std::cout << "is down? " << isDownward << std::endl;
 
 	      if (PurityTot < 0.05 && SigTot < 0.1){
-		std::cout << "Clear Cosmic" << std::endl;
+		//	std::cout << "Clear Cosmic" << std::endl;
 
 		clearcosmiccount = clearcosmiccount + 1;
 
 		if (ppfo->GetParticleId() == 13) {
-		  std::cout << "Tagged as a CR by overall mechanism" << std::endl;
+		  //	  std::cout << "Tagged as a CR by overall mechanism" << std::endl;
 		  correctcr = correctcr + 1;
 		}
 		if (ppfo->GetParticleId()  == 12 || ppfo->GetParticleId()  == 14) {
-		  std::cout << "tagged as neutrino by overall mechanism" << std::endl;
+		  //	  std::cout << "tagged as neutrino by overall mechanism" << std::endl;
 		  incorrectcr = incorrectcr + 1;
 		}
 	      }
 	      else if (PurityTot > 0.95 && SigTot > 0.1) {
-		std::cout << "Clear Neutrino" << std::endl;
+		//	std::cout << "Clear Neutrino" << std::endl;
 
 		clearneutrinocount = clearneutrinocount + 1;
 
 		if (ppfo->GetParticleId() == 13) {
-		  std::cout << "Tagged as a CR by overall mechanism" << std::endl;
+		  // std::cout << "Tagged as a CR by overall mechanism" << std::endl;
 		  incorrectneutrino = incorrectneutrino + 1;
 		}
 		if (ppfo->GetParticleId()  == 12 || ppfo->GetParticleId()  == 14) {
-		  std::cout << "neutrino by overall mechanism" << std::endl;
+		  // std::cout << "neutrino by overall mechanism" << std::endl;
 		  correctneutrino = correctneutrino + 1;
 		}
 	      }
 	      else{
-		std::cout << "Unclear" << std::endl;
+		//	std::cout << "Unclear" << std::endl;
 
 		if (ppfo->GetParticleId() == 13) {
-		  std::cout << "Tagged as a CR by overall mechanism" << std::endl;
+		  //  std::cout << "Tagged as a CR by overall mechanism" << std::endl;
 		  // incorrectneutrino = incorrectneutrino + 1;
 		}
 		if (ppfo->GetParticleId()  == 12 || ppfo->GetParticleId()  == 14) {
-		  std::cout << "neutrino by overall mechanism" << std::endl;
+		  // std::cout << "neutrino by overall mechanism" << std::endl;
 		  // correctneutrino = correctneutrino + 1;
 		}
 		    
 	      }
-	      std::cout << "                                  " << std::endl;
+	      // std::cout << "                                  " << std::endl;
 	      
 	      //  }
 	      // else if (hitsinpfo==0){
