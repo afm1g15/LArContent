@@ -41,8 +41,12 @@ NeutrinoIdTool<T>::NeutrinoIdTool() :
 //------------------------------------------------------------------------------------------------------------------------------------------
 
 template<typename T>
-void NeutrinoIdTool<T>::SelectOutputPfos(const Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses, PfoList &selectedPfos)
+void NeutrinoIdTool<T>::SelectOutputPfos(const Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses, PfoList &selectedPfos,  const SliceVector &sliceVector)
 {
+  if (1==2) {
+    std::cout << "slice size neutrino Id " << sliceVector.size() << std::endl;
+  }
+
     if (nuSliceHypotheses.size() != crSliceHypotheses.size())
         throw StatusCodeException(STATUS_CODE_INVALID_PARAMETER);
 

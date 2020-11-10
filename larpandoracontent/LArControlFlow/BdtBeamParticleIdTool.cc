@@ -73,8 +73,12 @@ StatusCode BdtBeamParticleIdTool::Initialize()
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-void BdtBeamParticleIdTool::SelectOutputPfos(const pandora::Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses, PfoList &selectedPfos)
+  void BdtBeamParticleIdTool::SelectOutputPfos(const pandora::Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses, PfoList &selectedPfos, const SliceVector &sliceVector)
 {
+  if (1==2) {
+      std::cout << sliceVector.size() << std::endl;
+    }
+
     if (nuSliceHypotheses.size() != crSliceHypotheses.size())
         throw StatusCodeException(STATUS_CODE_INVALID_PARAMETER);
 

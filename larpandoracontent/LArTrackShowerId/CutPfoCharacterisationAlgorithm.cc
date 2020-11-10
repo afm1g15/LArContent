@@ -36,6 +36,7 @@ CutPfoCharacterisationAlgorithm::CutPfoCharacterisationAlgorithm() :
 
 bool CutPfoCharacterisationAlgorithm::IsClearTrack(const Cluster *const pCluster) const
 {
+  std::cout << "Cut pfo characterisation alg: iscleartrack 1 start" << std::endl;
     float straightLineLength(-1.f);
     float dTdLMin(+std::numeric_limits<float>::max()), dTdLMax(-std::numeric_limits<float>::max());
 
@@ -73,6 +74,7 @@ bool CutPfoCharacterisationAlgorithm::IsClearTrack(const Cluster *const pCluster
     if ((showerFitWidth < std::numeric_limits<float>::epsilon()) || ((showerFitWidth / straightLineLength) > m_showerWidthRatioCut))
         return false;
 
+    std::cout << "Cut pfo characterisation alg: iscleartrack 1 end" << std::endl;
     return true;
 }
 
@@ -80,6 +82,7 @@ bool CutPfoCharacterisationAlgorithm::IsClearTrack(const Cluster *const pCluster
 
 bool CutPfoCharacterisationAlgorithm::IsClearTrack(const pandora::ParticleFlowObject *const /*pPfo*/) const
 {
+  
 	throw StatusCodeException(STATUS_CODE_NOT_ALLOWED);
 }
 

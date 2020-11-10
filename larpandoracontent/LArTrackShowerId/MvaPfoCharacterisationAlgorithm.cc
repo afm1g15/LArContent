@@ -97,6 +97,7 @@ bool MvaPfoCharacterisationAlgorithm<T>::IsClearTrack(const Cluster *const pClus
 template<typename T>
 bool MvaPfoCharacterisationAlgorithm<T>::IsClearTrack(const pandora::ParticleFlowObject *const pPfo) const
 {
+  std::cout << "MvaPfoCharacterisationAlg: Is clear track 2 start" << std::endl;
     if (!LArPfoHelper::IsThreeD(pPfo))
     {
         if (m_enableProbability)
@@ -108,17 +109,22 @@ bool MvaPfoCharacterisationAlgorithm<T>::IsClearTrack(const pandora::ParticleFlo
         return (pPfo->GetParticleId() == MU_MINUS);
     }
 
+    std::cout << "1" << std::endl;
+
     ClusterList wClusterList;
     LArPfoHelper::GetClusters(pPfo, TPC_VIEW_W, wClusterList);
+    std::cout << "post get cluster list" << std::endl;
 
     //charge related features are only calculated using hits in W view
     // This won't work unless use 3D info is set to true - dev purposes only
     const PfoCharacterisationFeatureTool::FeatureToolVector &chosenFeatureToolVector(wClusterList.empty() ? m_featureToolVectorNoChargeInfo : m_featureToolVectorThreeD);
     // Purity, completeness
     // ATTN Assume your Pfos of interest are in a PfoList called myPfoList
+    std::cout << "postchosenfeaturetoolvector" << std::endl;
 
     const LArMvaHelper::MvaFeatureVector featureVector(LArMvaHelper::CalculateFeatures(chosenFeatureToolVector, this, pPfo));
 
+    std::cout << "2" << std::endl;
     if (m_trainingSetMode)
     {
         const PfoList myPfoList(1, pPfo);
@@ -141,6 +147,7 @@ bool MvaPfoCharacterisationAlgorithm<T>::IsClearTrack(const pandora::ParticleFlo
         LArMCParticleHelper::PfoToMCParticleHitSharingMap pfoToMCParticleHitSharingMap;
         LArMCParticleHelper::MCParticleToPfoHitSharingMap mcParticleToPfoHitSharingMap;
         LArMCParticleHelper::GetPfoMCParticleHitSharingMaps(pfoToReconstructable2DHitsMap, mcParticlesToGoodHitsMaps, pfoToMCParticleHitSharingMap, mcParticleToPfoHitSharingMap);
+
 
         const CaloHitList &allHitsInPfo(pfoToReconstructable2DHitsMap.at(pPfo));
         const int nHitsInPfoTotal(allHitsInPfo.size());
@@ -260,6 +267,8 @@ bool MvaPfoCharacterisationAlgorithm<T>::IsClearTrack(const pandora::ParticleFlo
         }
     }
 
+    
+     std::cout << "MvaPfoCharacterisationAlg: Is clear track 2 almost end" << std::endl;
     //if no failures, proceed with MvaPfoCharacterisationAlgorithm classification
     if (!m_enableProbability)
     {

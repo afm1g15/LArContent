@@ -173,7 +173,7 @@ protected:
      *  @param  nuSliceHypotheses the vector of slice neutrino hypotheses
      *  @param  crSliceHypotheses the vector of slice cosmic-ray hypotheses
      */
-    pandora::StatusCode SelectBestSliceHypotheses(const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses) const;
+    pandora::StatusCode SelectBestSliceHypotheses(const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses, const SliceVector &sliceVector) const;
 
     /**
      *  @brief  Reset all worker instances
@@ -408,7 +408,7 @@ public:
      *  @param  sliceNuPfos to receive the list of selected pfos
      */
     virtual void SelectOutputPfos(const pandora::Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses,
-        pandora::PfoList &selectedPfos) = 0;
+				  pandora::PfoList &selectedPfos, const SliceVector &sliceVector) = 0;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------

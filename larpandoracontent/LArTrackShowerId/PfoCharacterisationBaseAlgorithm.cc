@@ -55,7 +55,11 @@ StatusCode PfoCharacterisationBaseAlgorithm::Run()
         for (const ParticleFlowObject *const pPfo : *pPfoList)
         {
             PandoraContentApi::ParticleFlowObject::Metadata pfoMetadata;
+	    std::cout << "----------------" << std::endl;
+	    std::cout << "PfoCharacterisationBaseAlg m_useThreeDInformation " << m_useThreeDInformation << std::endl;
+	    std::cout << "pPfo " << pPfo << std::endl;
             const bool isTrackLike(m_useThreeDInformation ? this->IsClearTrack(pPfo) : this->IsClearTrack3x2D(pPfo));
+	    std::cout << "post isTrackLike" << std::endl;
             if (isTrackLike)
             {
                 pfoMetadata.m_particleId = MU_MINUS;
@@ -105,6 +109,7 @@ StatusCode PfoCharacterisationBaseAlgorithm::Run()
 
 bool PfoCharacterisationBaseAlgorithm::IsClearTrack3x2D(const ParticleFlowObject *const pPfo) const
 {
+  std::cout << "Is clear track 3x2D start" << std::endl;
     ClusterList twoDClusterList;
     LArPfoHelper::GetTwoDClusterList(pPfo, twoDClusterList);
 
@@ -124,6 +129,7 @@ bool PfoCharacterisationBaseAlgorithm::IsClearTrack3x2D(const ParticleFlowObject
         if (nTrackLikeViews >= m_minTrackLikeViews)
             return true;
     }
+    std::cout << "Is clear track 3x2D end" << std::endl;
 
     return false;
 }
