@@ -422,18 +422,22 @@ void LArMCParticleHelper::GetMCParticleToCaloHitMatches(const CaloHitList *const
 void LArMCParticleHelper::SelectReconstructableMCParticles(const MCParticleList *pMCParticleList, const CaloHitList *pCaloHitList, const PrimaryParameters &parameters,
     std::function<bool(const MCParticle *const)> fCriteria, MCContributionMap &selectedMCParticlesToHitsMap)
 {
+  
     // Obtain map: [mc particle -> primary mc particle]
     LArMCParticleHelper::MCRelationMap mcToPrimaryMCMap;
     LArMCParticleHelper::GetMCPrimaryMap(pMCParticleList, mcToPrimaryMCMap);
+ 
 
     // Remove non-reconstructable hits, e.g. those downstream of a neutron
     CaloHitList selectedCaloHitList;
     LArMCParticleHelper::SelectCaloHits(pCaloHitList, mcToPrimaryMCMap, selectedCaloHitList, parameters.m_selectInputHits, parameters.m_maxPhotonPropagation);
 
+
     // Obtain maps: [hit -> primary mc particle], [primary mc particle -> list of hits]
     CaloHitToMCMap hitToPrimaryMCMap;
     MCContributionMap mcToTrueHitListMap;
     LArMCParticleHelper::GetMCParticleToCaloHitMatches(&selectedCaloHitList, mcToPrimaryMCMap, hitToPrimaryMCMap, mcToTrueHitListMap);
+
 
     // Obtain vector: primary mc particles
     MCParticleVector mcPrimaryVector;
@@ -443,8 +447,10 @@ void LArMCParticleHelper::SelectReconstructableMCParticles(const MCParticleList 
     MCParticleVector candidateTargets;
     LArMCParticleHelper::SelectParticlesMatchingCriteria(mcPrimaryVector, fCriteria, candidateTargets);
 
+
     // Ensure the MCParticles have enough "good" hits to be reconstructed
     LArMCParticleHelper::SelectParticlesByHitCount(candidateTargets, mcToTrueHitListMap, mcToPrimaryMCMap, parameters, selectedMCParticlesToHitsMap);
+    
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -797,8 +803,11 @@ void LArMCParticleHelper::SelectParticlesByHitCount(const MCParticleVector &cand
         if (nGoodViews < parameters.m_minPrimaryGoodViews)
             continue;
 
+	std::cout << "LArMCHelper: before" << std::endl;
+
         if (!selectedMCParticlesToHitsMap.insert(MCContributionMap::value_type(pMCTarget, caloHitList)).second)
             throw StatusCodeException(STATUS_CODE_ALREADY_PRESENT);
+	std::cout << "LArMCHelper: after" << std::endl;
     }
 }
 
