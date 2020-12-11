@@ -706,7 +706,7 @@ void LArMCParticleHelper::CollectReconstructable2DHits(const ParticleFlowObject 
         pfoList.push_back(pPfo);
     }
 
-  LArMCParticleHelper::CollectReconstructable2DHits(pfoList, selectedMCParticleToHitsMaps, reconstructableCaloHitList2DMap);
+  LArMCParticleHelper::CollectReconstructable2DHits(pfoList, selectedMCParticleToHitsMaps, reconstructableCaloHitList2D);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -945,11 +945,9 @@ void LArMCParticleHelper::SelectParticlesByHitCount(const MCParticleVector &cand
         if (nGoodViews < parameters.m_minPrimaryGoodViews)
             continue;
 
-	std::cout << "LArMCHelper: before" << std::endl;
 
         if (!selectedMCParticlesToHitsMap.insert(MCContributionMap::value_type(pMCTarget, caloHitList)).second)
             throw StatusCodeException(STATUS_CODE_ALREADY_PRESENT);
-	std::cout << "LArMCHelper: after" << std::endl;
     }
 }
 
