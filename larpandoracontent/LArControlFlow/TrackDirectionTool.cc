@@ -37,9 +37,9 @@ namespace lar_content
 {
 
   TrackDirectionTool::TrackDirectionTool() :
-    m_slidingFitWindow(20), 
-    m_minClusterCaloHits(20), 
-    m_minClusterLength(10.f),
+    m_slidingFitWindow(5), 
+    m_minClusterCaloHits(5), 
+    m_minClusterLength(1.f),
     m_numberTrackEndHits(100000), 
     m_enableFragmentRemoval(true), 
     m_enableSplitting(true), 
@@ -230,8 +230,12 @@ TrackDirectionTool::DirectionFitObject TrackDirectionTool::GetPfoDirection(const
     {
       const pandora::Vertex *const pVertex = LArPfoHelper::GetVertex(pPfo);
       const float slidingFitPitch(LArGeometryHelper::GetWireZPitch(this->GetPandora()));
+
+      std::cout << "Sliding fit window: " << m_slidingFitWindow << std::endl;
       LArTrackStateVector trackStateVector;
       LArPfoHelper::GetSlidingFitTrajectory(pPfo, pVertex, m_slidingFitWindow, slidingFitPitch, trackStateVector);
+
+     
 
       const Cluster *const pClusterW = GetTargetClusterFromPFO(pPfo, trackStateVector);
 
@@ -242,7 +246,7 @@ TrackDirectionTool::DirectionFitObject TrackDirectionTool::GetPfoDirection(const
 
 
 
-      // std::cout << "min = " <<  m_minClusterCaloHits << std::endl;
+      std::cout << "min = " <<  m_minClusterCaloHits << std::endl;
       // std::cout << "here = " << pClusterW->GetNCaloHits()  << std::endl;
       // std::cout << "total = " << totalcalohits.size() << std::endl;
         if (pClusterW->GetNCaloHits() <= m_minClusterCaloHits)
@@ -1959,7 +1963,7 @@ void TrackDirectionTool::GetCalorimetricDirection(const Cluster* pTargetClusterW
     if (pTargetClusterW->GetNCaloHits() < 1.5 * m_minClusterCaloHits || LArClusterHelper::GetLength(pTargetClusterW) < m_minClusterLength)
     {
         std::cout << "W Cluster too small" << std::endl;
-	std::cout << LArClusterHelper::GetLength(pTargetClusterW) << std::endl;
+	std::cout << LArClusterHelper::GetLength(pTargetClusterW) <<"  min: "<<  m_minClusterLength << std::endl;
         throw StatusCodeException(STATUS_CODE_FAILURE);
     }
 
