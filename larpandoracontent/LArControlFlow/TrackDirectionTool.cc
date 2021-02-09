@@ -71,7 +71,6 @@ StatusCode TrackDirectionTool::Initialize()
         
         if (LArClusterHelper::GetClusterHitType(pTargetClusterW) != TPC_VIEW_W)
         {
-	  //std::cout << "ERROR: cluster is not in the W view!" << std::endl;
             throw StatusCodeException(STATUS_CODE_FAILURE);
         }
 
