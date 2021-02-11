@@ -4,8 +4,9 @@
 *.log
 *.root
 *#
-lib/
-include/
-build/
 LArContentConfig.cmake
 LArContentConfigVersion.cmake
+build/
+include/
+lib/
+

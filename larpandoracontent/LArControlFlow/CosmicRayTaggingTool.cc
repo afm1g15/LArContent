@@ -11,12 +11,9 @@
 #include "larpandoracontent/LArControlFlow/CosmicRayTaggingTool.h"
 
 #include "larpandoracontent/LArHelpers/LArClusterHelper.h"
-#include "larpandoracontent/LArHelpers/LArGeometryHelper.h"
 #include "larpandoracontent/LArHelpers/LArPfoHelper.h"
 
 #include "larpandoracontent/LArObjects/LArCaloHit.h"
-
-//#include "larpandoracontent/LArDirection/TrackDirectionTool.h"
 
 using namespace pandora;
 
@@ -461,49 +458,7 @@ void CosmicRayTaggingTool::CheckIfTopToBottom(const CRCandidateList &candidates,
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
-//Direction Test Function
-// CosmicRayTaggingTool::DirectionFitObject CosmicRayTaggingTool::GetPfoDirection(const pandora::ParticleFlowObject *const pPfo)
-// {
 
-//     try 
-//     {
-//       std::cout << "Before vertex" << std::endl;
-//       const pandora::Vertex *const pVertex = LArPfoHelper::GetVertex(pPfo);
-//       std::cout << "before sliding fit pitch" << std::endl;
-//       const float slidingFitPitch(LArGeometryHelper::GetWireZPitch(this->GetPandora()));
-//       std::cout << "before sliding fit traj" << std::endl;
-//       LArTrackStateVector trackStateVector;
-//       unsigned int m_slidingFitWindow = 20;
-//       LArPfoHelper::GetSlidingFitTrajectory(pPfo, pVertex, m_slidingFitWindow, slidingFitPitch, trackStateVector);
-
-//       const Cluster *const pClusterW = GetTargetClusterFromPFO(pPfo, trackStateVector);
-
-//       //if (pClusterW->GetNCaloHits() <= m_minClusterCaloHits)
-//       //{
-//       //    std::cout << "ERROR: PFO is tiny!" << std::endl;
-//       //    throw StatusCodeException(STATUS_CODE_NOT_FOUND);
-//       //}
-
-//       DirectionFitObject finalDirectionFitObject = GetClusterDirection(pClusterW);
-//         //this->ComputeProbability(finalDirectionFitObject);
-
-//         //If the PFO is 3D, then 3D endpoints should be set 
-//         //if (LArPfoHelper::IsThreeD(pPfo))
-//         //    SetEndpoints(finalDirectionFitObject, trackStateVector);
-
-//         //this->TidyUp();
-//         return finalDirectionFitObject;
-//     }
-
-//     catch (StatusCodeException &statusCodeException)
-//     {
-//       std::cout << "into the catch " << std::endl;
-//       //this->TidyUp();
-//         throw statusCodeException;
-//     }
-// }
-
-//-----------------------------------------------------------------------------------------------------------------------------------------
 void CosmicRayTaggingTool::GetNeutrinoSlices(const CRCandidateList &candidates, const PfoToBoolMap &pfoToInTimeMap, const PfoToBoolMap &pfoToIsContainedMap,
     UIntSet &neutrinoSliceSet) const
 {
@@ -523,13 +478,11 @@ void CosmicRayTaggingTool::GetNeutrinoSlices(const CRCandidateList &candidates, 
         if (neutrinoSliceSet.count(candidate.m_sliceId))
             continue;
 
-	
         const bool likelyNeutrino(candidate.m_canFit && sliceIdToIsInTimeMap.at(candidate.m_sliceId) &&
             (candidate.m_theta < m_maxNeutrinoCosTheta || pfoToIsContainedMap.at(candidate.m_pPfo)));
 
         if (likelyNeutrino)
             (void) neutrinoSliceSet.insert(candidate.m_sliceId);
-	
     }
 }
 
@@ -538,13 +491,10 @@ void CosmicRayTaggingTool::GetNeutrinoSlices(const CRCandidateList &candidates, 
 void CosmicRayTaggingTool::TagCRMuons(const CRCandidateList &candidates, const PfoToBoolMap &pfoToInTimeMap, const PfoToBoolMap &pfoToIsTopToBottomMap,
     const UIntSet &neutrinoSliceSet, PfoToBoolMap &pfoToIsLikelyCRMuonMap) const
 {
-  
     for (const CRCandidate &candidate : candidates)
     {
-      
-       const bool likelyCRMuon(!neutrinoSliceSet.count(candidate.m_sliceId) && (!pfoToInTimeMap.at(candidate.m_pPfo) || (candidate.m_canFit &&
-      (pfoToIsTopToBottomMap.at(candidate.m_pPfo) || ((candidate.m_theta > m_minCosmicCosTheta) && (candidate.m_curvature < m_maxCosmicCurvature)))) ));
-
+        const bool likelyCRMuon(!neutrinoSliceSet.count(candidate.m_sliceId) && (!pfoToInTimeMap.at(candidate.m_pPfo) || (candidate.m_canFit &&
+            (pfoToIsTopToBottomMap.at(candidate.m_pPfo) || ((candidate.m_theta > m_minCosmicCosTheta) && (candidate.m_curvature < m_maxCosmicCurvature)))) ));
 
         if (!pfoToIsLikelyCRMuonMap.insert(PfoToBoolMap::value_type(candidate.m_pPfo, likelyCRMuon)).second)
             throw StatusCodeException(STATUS_CODE_ALREADY_PRESENT);

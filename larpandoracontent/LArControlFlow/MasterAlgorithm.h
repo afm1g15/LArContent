@@ -14,8 +14,6 @@
 #include "larpandoracontent/LArObjects/LArCaloHit.h"
 #include "larpandoracontent/LArControlFlow/MultiPandoraApi.h"
 
-#include "Pandora/Algorithm.h"
-
 #include <unordered_map>
 
 namespace lar_content
@@ -27,7 +25,6 @@ class SliceIdBaseTool;
 class SliceSelectionBaseTool;
 class LArMCParticleFactory;
 class TrackDirectionBaseTool;
-
 
 typedef std::vector<pandora::CaloHitList> SliceVector;
 typedef std::vector<pandora::PfoList> SliceHypotheses;
@@ -46,7 +43,6 @@ public:
      *  @brief  Default constructor
      */
     MasterAlgorithm();
-    virtual ~MasterAlgorithm();
 
     /**
      *  @brief  External steering parameters class
@@ -146,7 +142,6 @@ protected:
      *  @param  clearCosmicRayPfos to receive the list of clear cosmic-ray pfos
      *  @param  ambiguousPfos to receive the list of ambiguous cosmic-ray pfos for further analysis
      */
-
     pandora::StatusCode TagCosmicRayPfos(const PfoToFloatMap &stitchedPfosToX0Map, pandora::PfoList &clearCosmicRayPfos, pandora::PfoList &ambiguousPfos) const;
 
     /**
@@ -312,7 +307,6 @@ protected:
         const pandora::TiXmlHandle xmlHandle, const std::string &xmlTag, bool &outputBool);
 
     bool                        m_workerInstancesInitialized;       ///< Whether all worker instances have been initialized
-
     bool                        m_shouldRunAllHitsCosmicReco;       ///< Whether to run all hits cosmic-ray reconstruction
     bool                        m_shouldRunStitching;               ///< Whether to stitch cosmic-ray muons crossing between volumes
     bool                        m_shouldRunCosmicHitRemoval;        ///< Whether to remove hits from tagged cosmic-rays
@@ -355,9 +349,8 @@ protected:
     std::string                 m_recreatedPfoListName;             ///< The output recreated pfo list name
     std::string                 m_recreatedClusterListName;         ///< The output recreated cluster list name
     std::string                 m_recreatedVertexListName;          ///< The output recreated vertex list name
-
-    std::string             m_clusterListName;         ///< The requested calo hit list name
-    std::string             m_pfoListName;         ///< The requested calo hit list name
+    std::string                 m_clusterListName;         ///< The requested calo hit list name
+    std::string                 m_pfoListName;         ///< The requested calo hit list name
 
 
     float                       m_inTimeMaxX0;                      ///< Cut on X0 to determine whether particle is clear cosmic ray
@@ -421,7 +414,7 @@ public:
      *  @param  sliceNuPfos to receive the list of selected pfos
      */
   virtual void SelectOutputPfos(const pandora::Algorithm *const pAlgorithm, const SliceHypotheses &nuSliceHypotheses, const SliceHypotheses &crSliceHypotheses,
-				pandora::PfoList &selectedPfos, const PfoToFloatMap &pfoToProbabilityMap, const SliceVector &sliceVector) = 0;
+        pandora::PfoList &selectedPfos, const PfoToFloatMap &pfoToProbabilityMap, const SliceVector &sliceVector) = 0;
 };
 //-------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -435,7 +428,7 @@ public:
     *  @brief  Find direction of a track
            *
     *  @param  parentCosmicRayPfos the list of parent cosmic-ray pfos
-    *  @param  ambiguousPfos to receive the list of ambiguous pfos 
+    *  @param  ambiguousPfos to receive the list of ambiguous pfos
     *  @param  pAlgorithm the address of this master algorithm
     */
 
@@ -443,7 +436,7 @@ public:
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------
-
+//------------------------------------------------------------------------------------------------------------------------------------------
 
 /**
  *  @brief  SliceSelectionBaseTool class
@@ -461,7 +454,6 @@ public:
     virtual void SelectSlices(const pandora::Algorithm *const pAlgorithm, const SliceVector &inputSliceVector,
         SliceVector &outputSliceVector) = 0;
 };
-
 
 } // namespace lar_content
 

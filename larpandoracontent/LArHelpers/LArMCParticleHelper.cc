@@ -501,12 +501,10 @@ void LArMCParticleHelper::SelectReconstructableMCParticles(const MCParticleList 
     LArMCParticleHelper::MCRelationMap mcToTargetMCMap;
     parameters.m_foldBackHierarchy ? LArMCParticleHelper::GetMCPrimaryMap(pMCParticleList, mcToTargetMCMap) : LArMCParticleHelper::GetMCToSelfMap(pMCParticleList, mcToTargetMCMap);
 
-
     // Remove non-reconstructable hits, e.g. those downstream of a neutron
     // Unless selectInputHits == false
     CaloHitList selectedCaloHitList;
     LArMCParticleHelper::SelectCaloHits(pCaloHitList, mcToTargetMCMap, selectedCaloHitList, parameters.m_selectInputHits, parameters.m_maxPhotonPropagation);
-
 
     // Obtain maps: [hit -> target mc particle], [target mc particle -> list of hits]
     CaloHitToMCMap trueHitToTargetMCMap;
@@ -528,10 +526,8 @@ void LArMCParticleHelper::SelectReconstructableMCParticles(const MCParticleList 
     MCParticleVector candidateTargets;
     LArMCParticleHelper::SelectParticlesMatchingCriteria(targetMCVector, fCriteria, candidateTargets, parameters, false);
 
-
     // Ensure the MCParticles have enough "good" hits to be reconstructed
     LArMCParticleHelper::SelectParticlesByHitCount(candidateTargets, targetMCToTrueHitListMap, mcToTargetMCMap, parameters, selectedMCParticlesToHitsMap);
-
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -588,10 +584,10 @@ void LArMCParticleHelper::SelectReconstructableTestBeamHierarchyMCParticles(cons
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-void LArMCParticleHelper::GetPfoToReconstructable2DHitsMap(const PfoList &pfoList, const MCContributionMap &selectedMCParticleToHitsMap, PfoContributionMap &pfoToReconstructable2DHitsMap, const bool foldBackHierarchy)
+void LArMCParticleHelper::GetPfoToReconstructable2DHitsMap(const PfoList &pfoList, const MCContributionMap &selectedMCParticleToHitsMap,
+    PfoContributionMap &pfoToReconstructable2DHitsMap, const bool foldBackHierarchy)
 {
     LArMCParticleHelper::GetPfoToReconstructable2DHitsMap(pfoList, MCContributionMapVector({selectedMCParticleToHitsMap}), pfoToReconstructable2DHitsMap, foldBackHierarchy);
-
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -604,7 +600,8 @@ void LArMCParticleHelper::GetTestBeamHierarchyPfoToReconstructable2DHitsMap(cons
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-void LArMCParticleHelper::GetPfoToReconstructable2DHitsMap(const PfoList &pfoList, const MCContributionMapVector &selectedMCParticleToHitsMaps, PfoContributionMap &pfoToReconstructable2DHitsMap, const bool foldBackHierarchy)
+void LArMCParticleHelper::GetPfoToReconstructable2DHitsMap(const PfoList &pfoList, const MCContributionMapVector &selectedMCParticleToHitsMaps,
+    PfoContributionMap &pfoToReconstructable2DHitsMap, const bool foldBackHierarchy)
 {
     for (const ParticleFlowObject *const pPfo : pfoList)
     {
@@ -618,7 +615,8 @@ void LArMCParticleHelper::GetPfoToReconstructable2DHitsMap(const PfoList &pfoLis
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-void LArMCParticleHelper::GetTestBeamHierarchyPfoToReconstructable2DHitsMap(const PfoList &pfoList, const MCContributionMapVector &selectedMCParticleToHitsMaps, PfoContributionMap &pfoToReconstructable2DHitsMap, const bool foldBackHierarchy)
+void LArMCParticleHelper::GetTestBeamHierarchyPfoToReconstructable2DHitsMap(const PfoList &pfoList, const MCContributionMapVector &selectedMCParticleToHitsMaps,
+    PfoContributionMap &pfoToReconstructable2DHitsMap, const bool foldBackHierarchy)
 {
     for (const ParticleFlowObject *const pPfo : pfoList)
     {
@@ -690,7 +688,8 @@ void LArMCParticleHelper::GetPfoMCParticleHitSharingMaps(const PfoContributionMa
 // private
 //------------------------------------------------------------------------------------------------------------------------------------------
 
-void LArMCParticleHelper::CollectReconstructable2DHits(const ParticleFlowObject *const pPfo, const MCContributionMapVector &selectedMCParticleToHitsMaps, pandora::CaloHitList &reconstructableCaloHitList2D, const bool foldBackHierarchy)
+void LArMCParticleHelper::CollectReconstructable2DHits(const ParticleFlowObject *const pPfo, const MCContributionMapVector &selectedMCParticleToHitsMaps,
+    pandora::CaloHitList &reconstructableCaloHitList2D, const bool foldBackHierarchy)
 {
 
     PfoList pfoList;
@@ -706,7 +705,7 @@ void LArMCParticleHelper::CollectReconstructable2DHits(const ParticleFlowObject 
         pfoList.push_back(pPfo);
     }
 
-  LArMCParticleHelper::CollectReconstructable2DHits(pfoList, selectedMCParticleToHitsMaps, reconstructableCaloHitList2D);
+    LArMCParticleHelper::CollectReconstructable2DHits(pfoList, selectedMCParticleToHitsMaps, reconstructableCaloHitList2D);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -944,7 +943,6 @@ void LArMCParticleHelper::SelectParticlesByHitCount(const MCParticleVector &cand
 
         if (nGoodViews < parameters.m_minPrimaryGoodViews)
             continue;
-
 
         if (!selectedMCParticlesToHitsMap.insert(MCContributionMap::value_type(pMCTarget, caloHitList)).second)
             throw StatusCodeException(STATUS_CODE_ALREADY_PRESENT);

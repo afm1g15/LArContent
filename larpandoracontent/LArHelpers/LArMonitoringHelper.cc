@@ -122,7 +122,7 @@ void LArMonitoringHelper::PrintMCParticleTable(const LArMCParticleHelper::MCCont
 {
     if (selectedMCParticleToGoodHitsMap.empty())
     {
-        std::cout << "No MCParticles supplied (as MCtoGoodHitsMap empty)." << std::endl;
+        std::cout << "No MCParticles supplied." << std::endl;
         return;
     }
 

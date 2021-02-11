@@ -17,7 +17,7 @@ namespace lar_content
 
 SupportVectorMachine::SupportVectorMachine() :
     m_isInitialized(false),
-    m_enableProbability(true),
+    m_enableProbability(false),
     m_probAParameter(0.),
     m_probBParameter(0.),
     m_standardizeFeatures(true),
@@ -248,9 +248,7 @@ StatusCode SupportVectorMachine::ReadSupportVector(const TiXmlHandle &currentHan
     for (const double &value : values)
         valuesFeatureVector.emplace_back(value);
 
-
     m_svInfoList.emplace_back(yAlpha, valuesFeatureVector);
-
     return STATUS_CODE_SUCCESS;
 }
 
